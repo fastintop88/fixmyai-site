@@ -546,12 +546,16 @@ function detectPlatform(html){
 
 // Platform instructions - step by step for each platform
 function getPlatformInstructions(platform, codeType, lang, code) {
-  var isRu = lang === 'ru' || lang === 'uk';
+  var isRu = lang === 'ru';
+  var isUk = lang === 'uk';
+  var isRuOrUk = isRu || isUk;
   var p = platform || 'custom';
 
   var instructions = {
     wordpress: {
-      head: isRu
+      head: isUk
+        ? '1. Увійдіть до панелі WordPress (сайт.ua/wp-admin)\n2. Плагіни → Додати новий\n3. Знайдіть "Insert Headers and Footers" → Встановити → Активувати\n4. Налаштування → Insert Headers and Footers\n5. Вставте код у поле "Scripts in Header"\n6. Натисніть Зберегти'
+        : isRu
         ? '1. Войдите в панель WordPress (сайт.ru/wp-admin)\n2. Плагины → Добавить новый\n3. Найдите "Insert Headers and Footers" → Установить → Активировать\n4. Настройки → Insert Headers and Footers\n5. Вставьте код в поле "Scripts in Header"\n6. Нажмите Сохранить'
         : '1. Login to WordPress (yoursite.com/wp-admin)\n2. Plugins → Add New\n3. Search "Insert Headers and Footers" → Install → Activate\n4. Settings → Insert Headers and Footers\n5. Paste code in "Scripts in Header" field\n6. Click Save',
       robots: isRu
@@ -565,7 +569,9 @@ function getPlatformInstructions(platform, codeType, lang, code) {
         : '1. Plugins → Yoast SEO (creates sitemap automatically)\n2. Check: yoursite.com/sitemap_index.xml\n3. Or create manually via hosting File Manager'
     },
     tilda: {
-      head: isRu
+      head: isUk
+        ? '1. Відкрийте ваш сайт у Tilda\n2. Натисніть шестерню ⚙️ → Налаштування сайту\n3. Вкладка "SEO"\n4. Знайдіть поле "HTML-код у секції HEAD"\n5. Вставте код\n6. Натисніть Зберегти та переопублікуйте сайт'
+        : isRu
         ? '1. Откройте ваш сайт в Tilda\n2. Нажмите шестерёнку ⚙️ → Настройки сайта\n3. Вкладка "SEO"\n4. Найдите поле "HTML-код в секции HEAD"\n5. Вставьте код\n6. Нажмите Сохранить и переопубликуйте сайт'
         : '1. Open your Tilda site\n2. Click ⚙️ → Site Settings\n3. Tab "SEO"\n4. Find "HTML code in HEAD section" field\n5. Paste code\n6. Save and re-publish site',
       robots: isRu
@@ -687,16 +693,24 @@ function getPlatformInstructions(platform, codeType, lang, code) {
       sitemap: isRu ? 'MODX: Плагины → Управление картой сайта' : 'MODX: Plugins → Sitemap management'
     },
     custom: {
-      head: isRu
+      head: isUk
+        ? 'У вас власна CMS. Є 3 варіанти:\n\n1️⃣ Є розробник:\nНадішліть йому код вище з текстом:\n"Додай цей код у розділ <head> на всіх сторінках сайту"\n\n2️⃣ Є FTP-доступ:\n• Підключіться через FileZilla або інший FTP-клієнт\n• Знайдіть файл header.php, base.html або layout.html\n• Знайдіть тег </head> і додайте код перед ним\n• Збережіть файл\n\n3️⃣ Немає доступу:\nНапишіть хостинг-провайдеру:\n"Додайте цей код у секцію <head> всіх сторінок"'
+        : isRu
         ? 'У вас кастомный сайт. Есть 3 варианта:\n\n1️⃣ Есть разработчик:\nОтправьте ему код выше с текстом:\n"Добавь этот код в раздел <head> на всех страницах сайта"\n\n2️⃣ Есть FTP-доступ:\n• Подключитесь через FileZilla или другой FTP-клиент\n• Найдите файл header.php, base.html или layout.html\n• Найдите тег </head> и добавьте код перед ним\n• Сохраните файл\n\n3️⃣ Нет доступа:\nНапишите хостинг-провайдеру:\n"Добавьте этот код в секцию <head> всех страниц"'
         : 'You have a custom site. 3 options:\n\n1️⃣ Have a developer:\nSend them the code above with message:\n"Add this code to the <head> section on all pages"\n\n2️⃣ Have FTP access:\n• Connect via FileZilla or similar FTP client\n• Find header.php, base.html or layout.html\n• Find </head> tag and add code before it\n• Save the file\n\n3️⃣ No access:\nWrite to your hosting provider:\n"Please add this code to the <head> section of all pages"',
-      robots: isRu
+      robots: isUk
+        ? '1️⃣ Через FTP (FileZilla): завантажте файл robots.txt у кореневу папку (public_html)\n2️⃣ Через файловий менеджер хостингу: знайдіть кореневу папку → створіть/відредагуйте robots.txt\n3️⃣ Немає доступу: надішліть файл розробнику або хостинг-провайдеру'
+        : isRu
         ? '1️⃣ Через FTP (FileZilla): загрузите файл robots.txt в корневую папку (public_html)\n2️⃣ Через файловый менеджер хостинга: найдите корневую папку → создайте/отредактируйте robots.txt\n3️⃣ Нет доступа: отправьте файл разработчику или хостинг-провайдеру'
         : '1️⃣ Via FTP (FileZilla): upload robots.txt to root folder (public_html)\n2️⃣ Via hosting file manager: find root folder → create/edit robots.txt\n3️⃣ No access: send file to developer or hosting provider',
-      llms: isRu
+      llms: isUk
+        ? '1️⃣ Через FTP: завантажте файл llms.txt у кореневу папку сайту\n2️⃣ Через файловий менеджер хостингу\n3️⃣ Надішліть файл розробнику з текстом: "Завантаж цей файл у корінь сайту"'
+        : isRu
         ? '1️⃣ Через FTP: загрузите файл llms.txt в корневую папку сайта\n2️⃣ Через файловый менеджер хостинга\n3️⃣ Отправьте файл разработчику с текстом: "Загрузи этот файл в корень сайта"'
         : '1️⃣ Via FTP: upload llms.txt to site root folder\n2️⃣ Via hosting file manager\n3️⃣ Send file to developer: "Upload this file to the site root"',
-      sitemap: isRu
+      sitemap: isUk
+        ? '1️⃣ Через FTP: завантажте файл sitemap.xml у кореневу папку\n2️⃣ Додайте в robots.txt рядок: Sitemap: https://вашсайт/sitemap.xml\n3️⃣ Надішліть розробнику'
+        : isRu
         ? '1️⃣ Через FTP: загрузите файл sitemap.xml в корневую папку\n2️⃣ Добавьте в robots.txt строку: Sitemap: https://вашсайт/sitemap.xml\n3️⃣ Отправьте разработчику'
         : '1️⃣ Via FTP: upload sitemap.xml to root folder\n2️⃣ Add to robots.txt: Sitemap: https://yoursite/sitemap.xml\n3️⃣ Send to developer'
     }
@@ -917,6 +931,11 @@ function showResults(data){
   // DETECTED
   var platNames={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','drupal':'Drupal','prestashop':'PrestaShop','nextjs':'Next.js','nuxt':'Nuxt.js','laravel':'Laravel','django':'Django','static':'Static','gatsby':'Gatsby','custom':isRu?'Свой движок':'Custom'};
   var displayPlatform=platNames[DETECTED_PLATFORM]||(data.platform||'Custom');
+  // Site language for instructions (different from UI language)
+  var sLang=window.SITE_LANG||'en';
+  var sIsRu=sLang==='ru';
+  var sIsUk=sLang==='uk';
+  var sIsRuOrUk=sIsRu||sIsUk;
   document.getElementById('detRow').innerHTML=
     '<div class="det-badge"><span class="det-lbl">DETECTED</span><span class="det-val">'+esc(data.business_type||'General')+'</span></div>'
     +'<div class="det-badge"><span class="det-lbl">PLATFORM</span><span class="plat-val">'+esc(displayPlatform)+'</span></div>';
@@ -987,11 +1006,12 @@ function showResults(data){
     if(lk)ih+='<div class="ir-lk">'+(isRu?'🔒 В PDF':'🔒 In PDF')+'</div>';
     else ih+='<span class="ir-arr" id="ia'+j+'">▼</span>';
     ih+='</div>';
-    if(!lk){ih+='<div class="ir-body" id="ib'+j+'" style="display:none"><div class="ir-desc">'+esc(iss.description||'')+'</div><div class="code-b"><button class="cp-btn" id="cpb'+j+'" onclick="doCpBtn(event,'+j+')">'+(isRu?'📋 Копировать':'📋 Copy')+'</button><pre>'+esc(iss.fix_code||'')+'</pre></div><div class="paste-info"><strong>📌 '+(isRu?'Куда вставить: ':'Where to paste: ')+'</strong>'+esc(iss.where_to_paste||'')+'</div>'+(function(){
+    if(!lk){ih+='<div class="ir-body" id="ib'+j+'" style="display:none"><div class="ir-desc">'+esc(iss.description||'')+'</div><div class="code-b"><button class="cp-btn" id="cpb'+j+'" onclick="doCpBtn(event,'+j+')">'+(isRu?'📋 Копировать':'📋 Copy')+'</button><pre>'+esc(iss.fix_code||'')+'</pre></div><div class="paste-info"><strong>📌 '+(sIsRu?'Куда вставить: ':sIsUk?'Куди вставити: ':'Where to paste: ')+'</strong>'+esc(iss.where_to_paste||'')+'</div>'+(function(){
         var codeType=iss.category||'';
-        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,codeType,LANG,iss.fix_code||'');
-        var platName={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','custom':isRu?'Кастомный сайт':'Custom site','nextjs':'Next.js','nuxt':'Nuxt.js','laravel':'Laravel','django':'Django','static':isRu?'Статический сайт':'Static site','drupal':'Drupal','prestashop':'PrestaShop','weebly':'Weebly','ghost':'Ghost','gatsby':'Gatsby'}[DETECTED_PLATFORM]||(isRu?'Ваша платформа':'Your platform');
-        return '<div class="plat-info"><strong>🖥 '+platName+':</strong><div style="margin-top:8px;white-space:pre-line;font-size:.7rem;line-height:1.8;color:#558">'+esc(platInstr)+'</div></div>';
+        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,codeType,sLang,iss.fix_code||'');
+        var platName={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','custom':sIsRu?'Кастомный сайт':sIsUk?'Власна CMS':'Custom site','nextjs':'Next.js','nuxt':'Nuxt.js','laravel':'Laravel','django':'Django','static':sIsRu?'Статический сайт':sIsUk?'Статичний сайт':'Static site','drupal':'Drupal','prestashop':'PrestaShop','weebly':'Weebly','ghost':'Ghost','gatsby':'Gatsby'}[DETECTED_PLATFORM]||(sIsRu?'Ваша платформа':sIsUk?'Ваша платформа':'Your platform');
+        var platTitle=sIsRu?'Для вашей платформы':sIsUk?'Для вашої платформи':'For your platform';
+        return '<div class="plat-info"><strong>🖥 '+platTitle+' ('+platName+'):</strong><div style="margin-top:8px;white-space:pre-line;font-size:.7rem;line-height:1.8;color:#558">'+esc(platInstr)+'</div></div>';
       }())+'</div>';}
     ih+='</div>';
   }
