@@ -1218,7 +1218,12 @@ function dlPDF(){
     try{
       var isRu=LANG==='ru',all=SDATA.issues||[];
       var host=SURL.replace(/https?:\/\//,'').split('/')[0];
-      var date=new Date().toLocaleDateString(isRu?'ru-RU':'en-US',{year:'numeric',month:'long',day:'numeric'});
+      // Use site language for report content, not UI language
+      var rLang=window.SITE_LANG||LANG;
+      var rIsRu=rLang==='ru';
+      var rIsUk=rLang==='uk';
+      var rIsRuOrUk=rIsRu||rIsUk;
+      var date=new Date().toLocaleDateString(rIsUk?'uk-UA':rIsRu?'ru-RU':'en-US',{year:'numeric',month:'long',day:'numeric'});
       var sc=[SDATA.aeo_score||31,SDATA.geo_score||25,SDATA.agent_score||19];
       var sl=TX[LANG].sl;
       var vs=SDATA.visibility_score||32,va=SDATA.visibility_after||67;
@@ -1234,8 +1239,8 @@ function dlPDF(){
       function esc2(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
       var issHtml=all.map(function(iss,i){
-        var pl=iss.priority==='high'?(isRu?'🔴 Высокий':'🔴 High'):iss.priority==='medium'?(isRu?'🟡 Средний':'🟡 Medium'):(isRu?'🟢 Низкий':'🟢 Low');
-        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,iss.category||'',LANG,iss.fix_code||'');
+        var pl=iss.priority==='high'?(rIsUk?'🔴 Високий':rIsRu?'🔴 Высокий':'🔴 High'):iss.priority==='medium'?(rIsUk?'🟡 Середній':rIsRu?'🟡 Средний':'🟡 Medium'):(rIsUk?'🟢 Низький':rIsRu?'🟢 Низкий':'🟢 Low');
+        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,iss.category||'',rLang,iss.fix_code||'');
         return '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:18px;margin-bottom:14px;page-break-inside:avoid">'
           +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;flex-wrap:wrap">'
           +'<span style="background:#f3f4f6;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#374151">#'+(i+1)+'</span>'
@@ -1247,15 +1252,15 @@ function dlPDF(){
           +(function(){
             var cat=(iss.category||'').toLowerCase();
             var title;
-            if(cat.indexOf('llms')>-1) title=isRu?'Создайте файл llms.txt и вставьте это содержимое:':'Create llms.txt with this content:';
-            else if(cat.indexOf('robot')>-1) title=isRu?'Добавьте эти строки в файл robots.txt:':'Add these lines to robots.txt:';
-            else if(cat.indexOf('sitemap')>-1) title=isRu?'Создайте файл sitemap.xml с этим содержимым:':'Create sitemap.xml with this content:';
-            else if(cat.indexOf('schema')>-1||cat.indexOf('structured')>-1) title=isRu?'Скопируйте и вставьте в тег head сайта:':'Copy and paste inside head tag:';
-            else if(cat.indexOf('open graph')>-1||cat.indexOf('meta')>-1) title=isRu?'Скопируйте мета-теги и вставьте в head:':'Copy meta tags and paste into head:';
-            else title=isRu?'Готовый код:':'Ready code:';
+            if(cat.indexOf('llms')>-1) title=rIsUk?'Створіть файл llms.txt і вставте цей вміст:':rIsRu?'Создайте файл llms.txt и вставьте это содержимое:':'Create file llms.txt with this content:';
+            else if(cat.indexOf('robot')>-1) title=rIsUk?'Додайте ці рядки у файл robots.txt:':rIsRu?'Добавьте эти строки в файл robots.txt:':'Add these lines to robots.txt:';
+            else if(cat.indexOf('sitemap')>-1) title=rIsUk?'Створіть файл sitemap.xml з цим вмістом:':rIsRu?'Создайте файл sitemap.xml с этим содержимым:':'Create sitemap.xml with this content:';
+            else if(cat.indexOf('schema')>-1||cat.indexOf('structured')>-1) title=rIsUk?'Скопіюйте та вставте в тег head сайту:':rIsRu?'Скопируйте и вставьте в тег head сайта:':'Copy and paste inside head tag:';
+            else if(cat.indexOf('open graph')>-1||cat.indexOf('meta')>-1) title=rIsUk?'Скопіюйте мета-теги та вставте в head:':rIsRu?'Скопируйте мета-теги и вставьте в head:':'Copy meta tags and paste into head:';
+            else title=rIsUk?'Готовий код:':rIsRu?'Готовый код:':'Ready code:';
             var cid='c'+i+'x'+(Math.random()*1e6|0);
-            var copyLabel=isRu?'Копировать':'Copy';
-            var copiedLabel=isRu?'✓ Скопировано!':'✓ Copied!';
+            var copyLabel=rIsUk?'Копіювати':rIsRu?'Копировать':'Copy';
+            var copiedLabel=rIsUk?'✓ Скопійовано!':rIsRu?'✓ Скопировано!':'✓ Copied!';
             return '<div style="background:#060606;border:1px solid #1a3a1a;border-radius:8px;padding:14px;margin-bottom:8px">'
               +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">'
               +'<div style="font-size:11px;font-weight:700;color:#00e676">'+title+'</div>'
@@ -1265,9 +1270,9 @@ function dlPDF(){
               +'</div>';
           }())
           +'<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:9px 12px;font-size:11px;color:#78350f;margin-bottom:6px">'
-          +'<strong>📌 '+(isRu?'Куда вставить: ':'Where to paste: ')+'</strong>'+esc2(iss.where_to_paste||'')+'</div>'
+          +'<strong>📌 '+(rIsUk?'Куди вставити: ':rIsRu?'Куда вставить: ':'Where to paste: ')+'</strong>'+esc2(iss.where_to_paste||'')+'</div>'
           +'<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:9px 12px;font-size:11px;color:#166534">'
-          +'<strong>🖥 '+esc2(platDisplay)+':</strong>'
+          +'<strong>🖥 '+(rIsUk?'Для вашої платформи':rIsRu?'Для вашей платформы':'For your platform')+' ('+esc2(platDisplay)+'):</strong>'
           +'<div style="margin-top:6px;white-space:pre-line;font-size:10px;line-height:1.8">'+esc2(platInstr)+'</div>'
           +'</div>'
           +'</div>';
