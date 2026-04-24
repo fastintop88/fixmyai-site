@@ -1448,6 +1448,18 @@ function demoData(url){
 document.addEventListener('DOMContentLoaded',function(){
   sL('ru');
   document.getElementById('urlInput').addEventListener('keydown',function(e){if(e.key==='Enter')startScan();});
+  
+  // Auto-fill URL from query parameter and start scan
+  var urlParams = new URLSearchParams(window.location.search);
+  var autoUrl = urlParams.get('url') || urlParams.get('site');
+  if(autoUrl){
+    var input = document.getElementById('urlInput');
+    input.value = autoUrl.indexOf('http') === 0 ? autoUrl : 'https://' + autoUrl;
+    // Auto-start scan after short delay
+    setTimeout(function(){
+      startScan();
+    }, 800);
+  }
   document.getElementById('compUrl1').addEventListener('keydown',function(e){if(e.key==='Enter')startComp();});
   document.getElementById('citeUrl').addEventListener('keydown',function(e){if(e.key==='Enter')startCite();});
   document.getElementById('citeQuery').addEventListener('keydown',function(e){if(e.key==='Enter')startCite();});
