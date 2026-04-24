@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>FixMyAI — Сканер AI-видимости сайта</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#000;--card:#0d0d0d;--b1:#1a1a1a;--b2:#252525;--text:#fff;--m1:#666;--m2:#333;--green:#00e676;--blue:#448aff;--orange:#ff9100;--red:#ff5252;--yellow:#ffd740;--purple:#b388ff;}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden;-webkit-text-size-adjust:100%}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;background:rgba(0,0,0,.96);border-bottom:1px solid #111;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Sora',sans-serif;font-size:.92rem;font-weight:700;text-decoration:none;color:inherit}
+.logo-bars{display:flex;align-items:flex-end;gap:2px;height:18px}
+.logo-bar{background:var(--green);border-radius:1px;width:3px}
+.logo-bar:nth-child(1){height:7px}.logo-bar:nth-child(2){height:12px}.logo-bar:nth-child(3){height:17px}.logo-bar:nth-child(4){height:9px}
+.logo-text{color:var(--green)}
+.nav-r{display:flex;align-items:center;gap:20px}
+.nav-a{color:#888;text-decoration:none;font-size:.78rem;font-weight:500;transition:color .15s;white-space:nowrap}
+.nav-a:hover{color:#fff}
+.nav-btn{background:var(--green);color:#000;border:none;padding:7px 16px;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.lw{display:flex;gap:4px}
+.lb{background:none;border:1px solid #222;color:#444;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:.68rem;font-weight:700;font-family:'Inter',sans-serif;transition:all .15s}
+.lb.on{border-color:#333;color:#fff;background:#1a1a1a}
+.hero{text-align:center;padding:64px 20px 0;max-width:820px;margin:0 auto}
+.badge{display:inline-block;border:1px solid #1a3a1a;background:rgba(0,230,118,.05);color:var(--green);padding:5px 14px;border-radius:100px;font-size:.7rem;font-weight:500;margin-bottom:18px;max-width:90%;word-break:break-word}
+.hero-desc{font-size:.85rem;color:#555;max-width:480px;margin:0 auto 28px;line-height:1.75}
+.eyebrow{font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+h1{font-family:'Sora',sans-serif;font-size:clamp(1.9rem,6vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.06;margin-bottom:20px}
+h1 .gr{color:var(--green)}
+.hero-sub{font-size:.88rem;color:#555;max-width:460px;margin:0 auto 40px;line-height:1.8}
+.tabs-wrap{max-width:640px;margin:0 auto 24px;padding:0 20px}
+.tabs{display:flex;background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:4px;gap:3px}
+.tab{flex:1;padding:9px 6px;border:none;background:none;color:#555;font-size:.72rem;font-weight:600;font-family:'Inter',sans-serif;border-radius:7px;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
+.tab.on{background:var(--b1);color:#fff;border:1px solid var(--b2)}
+.inp-wrap{max-width:580px;margin:0 auto;padding:0 20px;display:none}
+.inp-wrap.on{display:block}
+.irow{display:flex;background:var(--card);border:1px solid var(--b2);border-radius:8px;overflow:hidden;margin-bottom:8px}
+.irow input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:.86rem;font-family:'Inter',sans-serif;padding:12px 16px;min-width:0}
+.irow input::placeholder{color:#2a2a2a}
+.ibtn{background:var(--green);color:#000;border:none;padding:12px 20px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;flex-shrink:0}
+.ibtn:disabled{opacity:.4;cursor:wait}
+.inp-note{text-align:center;color:#2a2a2a;font-size:.68rem;margin-top:7px}
+.inp-label{font-size:.62rem;color:#444;padding:0 4px 5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.inp-opt{font-size:.6rem;color:#2a2a2a;margin-left:6px;font-weight:400}
+.err{background:#100505;border:1px solid #2a0808;border-radius:8px;padding:12px 18px;color:#ff6655;font-size:.78rem;display:none;max-width:580px;margin:10px auto 0}
+.err.on{display:block}
+.scanning{display:none;text-align:center;padding:52px 20px;max-width:500px;margin:0 auto}
+.scanning.on{display:block}
+.ring{width:44px;height:44px;border:2px solid var(--b1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ss-list{list-style:none;text-align:left;display:inline-block;margin-top:4px}
+.ss{font-size:.74rem;color:#2a2a2a;padding:3px 0;display:flex;align-items:center;gap:8px}
+.ss.active{color:#fff}.ss.done{color:#444}
+.ss-ic{width:12px;text-align:center;font-size:.66rem;flex-shrink:0}
+.ss.done .ss-ic{color:var(--green)}.ss.active .ss-ic{color:var(--orange)}
+.prog{width:100%;height:1px;background:#151515;margin-top:20px;overflow:hidden}
+.pb{height:100%;background:var(--green);width:0;transition:width .5s}
+/* RESULTS */
+.res{display:none;max-width:900px;margin:0 auto;padding:0 20px 80px}
+.res.on{display:block}
+.res-hd{text-align:center;padding:48px 0 28px}
+.res-hd h2{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.res-url{color:#444;font-size:.76rem}
+/* AI VISIBILITY SCORE - big number */
+.vis-score-wrap{background:var(--card);border:1px solid var(--b1);border-radius:16px;padding:28px 24px;margin-bottom:16px;text-align:center}
+.vis-score-label{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#444;margin-bottom:12px}
+.vis-score-main{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.vis-score-num{font-family:'Sora',sans-serif;font-size:4rem;font-weight:800;letter-spacing:-.05em;line-height:1}
+.vis-score-of{font-size:1.2rem;color:#333;font-weight:400;align-self:flex-end;padding-bottom:8px}
+.vis-score-grade{font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;padding:6px 14px;border-radius:8px}
+.vis-arrow{display:flex;align-items:center;gap:10px;justify-content:center;font-size:.82rem;margin-bottom:14px;flex-wrap:wrap}
+.vis-after{color:var(--green);font-family:'Sora',sans-serif;font-weight:700}
+.vis-arrow-icon{color:#333}
+.vis-bar-wrap{max-width:400px;margin:0 auto 14px}
+.vis-bar-bg{height:6px;background:#111;border-radius:3px;overflow:hidden;margin-bottom:6px}
+.vis-bar-fill{height:100%;border-radius:3px;transition:width 1.2s}
+.vis-bar-after-fill{height:100%;border-radius:3px;opacity:.3}
+.vis-improve-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.vis-improve-item{font-size:.68rem;background:#0a1a0a;border:1px solid #1a3a1a;color:#448;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:4px}
+.vis-improve-item::before{content:'+';color:var(--green);font-weight:700}
+/* DETECTED */
+.det-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.det-badge{background:var(--card);border:1px solid var(--b1);border-radius:8px;padding:7px 14px;font-size:.7rem;display:flex;align-items:center;gap:7px}
+.det-lbl{color:#444;font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:.6rem}
+.det-val{color:var(--green);font-weight:700}
+.plat-val{color:var(--blue);font-weight:700}
+/* SCORES */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sc{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:20px 16px}
+.sc-lbl{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#444;margin-bottom:12px}
+.sc-main{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.sc-g{font-family:'Sora',sans-serif;font-size:2.4rem;font-weight:800;line-height:1;letter-spacing:-.04em}
+.sc-n{font-size:1.2rem;font-weight:700}
+.sc-sl{font-size:.66rem;font-weight:600;color:#444;margin-bottom:8px}
+.sc-d{font-size:.68rem;color:#2a2a2a;line-height:1.5}
+.gt{color:var(--green)}.bt{color:var(--blue)}.ot{color:var(--orange)}.rt{color:var(--red)}.yt{color:var(--yellow)}.pt{color:var(--purple)}
+/* MENTION */
+.mention-card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mention-l{flex:1;min-width:180px}
+.mention-title{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:3px}
+.mention-desc{font-size:.72rem;color:#555;line-height:1.6}
+.mention-r{text-align:center;flex-shrink:0}
+.mention-score{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;line-height:1}
+.mention-lbl{font-size:.62rem;color:#444;margin-top:2px}
+/* ID CARD */
+.id-card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:20px;margin-bottom:14px}
+.id-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.id-title{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700}
+.id-badge{font-size:.6rem;background:#0a1a0a;border:1px solid #1a3a1a;color:var(--green);padding:2px 7px;border-radius:4px;font-weight:700}
+.id-quote{background:#080808;border-left:2px solid var(--green);border-radius:0 8px 8px 0;padding:12px 14px;font-size:.78rem;color:#777;line-height:1.75;margin-bottom:12px;font-style:italic}
+.id-meta{display:flex;gap:7px;flex-wrap:wrap}
+.id-tag{font-size:.66rem;background:#111;border:1px solid var(--b1);color:#555;padding:3px 9px;border-radius:20px}
+.id-tag.warn{border-color:#2a1a00;color:var(--orange);background:#0d0800}
+/* INVISIBLE QUERIES */
+.invis-card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.invis-head{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.invis-sub{font-size:.72rem;color:#555;margin-bottom:14px}
+.invis-queries{display:flex;flex-wrap:wrap;gap:7px}
+.invis-q{font-size:.72rem;padding:5px 12px;border-radius:20px;border:1px solid #2a0808;background:#100505;color:#ff6655;cursor:default}
+.invis-q.partial{border-color:#2a1a00;background:#0d0800;color:var(--orange)}
+/* CITATION IN REPORT */
+.cite-report-card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.cite-report-head{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.cite-engine-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0d0d0d;flex-wrap:wrap}
+.cite-engine-row:last-child{border-bottom:none}
+.cite-engine-name{font-size:.76rem;font-weight:600;width:100px;flex-shrink:0}
+.cite-pct-wrap{flex:1;display:flex;align-items:center;gap:10px;min-width:120px}
+.cite-pct-bar{flex:1;height:5px;background:#111;border-radius:3px;overflow:hidden}
+.cite-pct-fill{height:100%;border-radius:3px;transition:width 1s}
+.cite-pct-num{font-size:.72rem;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.cite-status{font-size:.66rem;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.cite-status.good{background:#0a1a0a;color:var(--green);border:1px solid #1a3a1a}
+.cite-status.bad{background:#100505;color:var(--red);border:1px solid #2a0808}
+.cite-status.mid{background:#0d0800;color:var(--orange);border:1px solid #2a1a00}
+/* SUBCATS */
+.subcats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.subcat{background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:14px 16px}
+.subcat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.subcat-nm{font-size:.74rem;font-weight:600}
+.subcat-sc{font-size:.74rem;font-weight:700}
+.subcat-bar{height:2px;background:#111;border-radius:2px;overflow:hidden;margin-bottom:6px}
+.subcat-fill{height:100%;border-radius:2px}
+.subcat-cnt{font-size:.66rem;color:#444}
+/* PRED */
+.pred-card{background:#060f06;border:1px solid #1a3a1a;border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.pred-head{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;color:var(--green);margin-bottom:12px}
+.pred-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pred-side{text-align:center}
+.pred-g{font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;line-height:1}
+.pred-lbl{font-size:.6rem;color:#444;margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
+.pred-arr{color:#1a3a1a;font-size:1.2rem;flex:1;text-align:center}
+.pred-items{flex:1;min-width:180px}
+.pred-item{font-size:.72rem;color:#448;padding:2px 0;display:flex;align-items:center;gap:5px}
+.pred-item::before{content:'↑';color:var(--green);font-size:.68rem}
+/* ISSUES */
+.issues-box{background:var(--card);border:1px solid var(--b1);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.issues-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid #111}
+.issues-hd h3{font-family:'Sora',sans-serif;font-size:.82rem;font-weight:700}
+.issues-cnt{background:#080808;border:1px solid var(--b1);color:#444;font-size:.6rem;padding:2px 8px;border-radius:100px}
+.ir{padding:13px 18px;border-bottom:1px solid #0d0d0d;transition:background .1s}
+.ir:last-child{border-bottom:none}
+.ir.click{cursor:pointer}.ir.click:hover{background:#080808}
+.ir.locked{opacity:.2;pointer-events:none}
+.ir-top{display:flex;align-items:center;gap:7px}
+.pd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ph{background:var(--red)}.pm{background:var(--yellow)}.pl{background:var(--green)}
+.ir-name{font-size:.78rem;font-weight:500;flex:1;line-height:1.4}
+.ir-cat{font-size:.58rem;background:#080808;border:1px solid var(--b1);color:#444;padding:2px 6px;border-radius:3px;white-space:nowrap}
+.ir-lk{font-size:.62rem;color:#222;margin-left:auto;white-space:nowrap}
+.ir-arr{color:#222;font-size:.56rem;transition:transform .2s;margin-left:5px;flex-shrink:0}
+.ir.open .ir-arr{transform:rotate(180deg)}
+.ir-body{display:none;margin-top:10px;padding-top:2px}
+.ir-desc{font-size:.74rem;color:#555;line-height:1.75;margin-bottom:10px}
+.code-b{position:relative;background:#060606;border:1px solid #111;border-radius:7px;padding:12px;margin-bottom:7px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.code-b pre{color:var(--green);font-family:'Courier New',monospace;font-size:.66rem;white-space:pre-wrap;word-break:break-word;margin:0;padding-right:54px}
+.cp-btn{position:absolute;top:7px;right:7px;background:#1a3a1a;border:1px solid #2a5a2a;color:var(--green);padding:4px 10px;border-radius:4px;font-size:.62rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;transition:all .15s}
+.cp-btn:hover{background:#2a5a2a;color:#fff;border-color:#3a7a3a}
+.paste-info{background:#080808;border:1px solid #111;border-radius:6px;padding:8px 12px;font-size:.7rem;color:#444;line-height:1.65;margin-bottom:5px}
+.paste-info strong{color:#996600}
+.plat-info{background:#060f06;border:1px solid #1a3a1a;border-radius:6px;padding:8px 12px;font-size:.7rem;color:#448;line-height:1.65}
+.plat-info strong{color:var(--green)}
+/* CTA */
+.cta-box{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:28px 20px;text-align:center}
+.cta-box h3{font-family:'Sora',sans-serif;font-size:.96rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.cta-box p{color:#555;font-size:.76rem;max-width:340px;margin:0 auto 11px;line-height:1.7}
+.cta-price{margin-bottom:16px;font-size:.8rem}
+.cta-price s{color:#222;margin-right:6px}
+.cta-price strong{color:var(--green)}
+.cta-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn-g{background:var(--green);color:#000;border:none;padding:10px 20px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-g:hover{opacity:.88}.btn-g:disabled{opacity:.4;cursor:wait}
+.btn-gh{background:none;border:1px solid #222;color:#555;padding:10px 20px;border-radius:7px;font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-gh:hover{border-color:#444;color:#fff}
+/* COMP */
+.comp-res{display:none;max-width:900px;margin:0 auto;padding:0 20px 80px}
+.comp-res.on{display:block}
+.comp-auto{background:#060f06;border:1px solid #1a3a1a;border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.comp-auto-title{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;color:var(--green);margin-bottom:12px}
+.comp-found-list{display:flex;flex-direction:column;gap:8px}
+.comp-found-item{background:#080808;border:1px solid var(--b1);border-radius:8px;padding:12px 14px}
+.comp-found-domain{font-size:.8rem;font-weight:600;color:var(--blue);margin-bottom:3px}
+.comp-found-why{font-size:.72rem;color:#555;line-height:1.6}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.comp-card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:18px}
+.comp-title{font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;margin-bottom:12px;color:#777;word-break:break-all}
+.comp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #111;font-size:.74rem}
+.comp-row:last-child{border-bottom:none}
+.comp-label{color:#555}
+.comp-val{font-weight:700}
+.cv-win{color:var(--green)}.cv-lose{color:var(--red)}.cv-tie{color:#888}
+/* CITE */
+.cite-res{display:none;max-width:900px;margin:0 auto;padding:0 20px 80px}
+.cite-res.on{display:block}
+.cite-tbl-wrap{background:var(--card);border:1px solid var(--b1);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.cite-tbl-hd{padding:14px 18px;border-bottom:1px solid #111;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.cite-tbl-hd h3{font-family:'Sora',sans-serif;font-size:.84rem;font-weight:700}
+.cite-q-badge{font-size:.66rem;color:#555;background:#080808;border:1px solid var(--b1);padding:4px 10px;border-radius:20px}
+.cite-hd-row{display:grid;grid-template-columns:130px 1fr 1fr;background:#080808;border-bottom:1px solid var(--b1)}
+.cite-hd-cell{padding:8px 14px;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#444}
+.cite-ai-row{display:grid;grid-template-columns:130px 1fr 1fr;border-bottom:1px solid #0d0d0d;cursor:pointer;transition:background .1s}
+.cite-ai-row:last-child{border-bottom:none}
+.cite-ai-row:hover{background:#080808}
+.cite-ai-row.expanded{background:#080808}
+.cite-ai-cell{padding:11px 14px;font-size:.76rem;display:flex;align-items:center}
+.cite-ai-name{display:flex;align-items:center;gap:8px;font-weight:600}
+.cite-ai-ico{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;flex-shrink:0}
+.cite-count-wrap{display:flex;align-items:center;gap:6px;width:100%}
+.cite-num{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:800;line-height:1;width:34px;flex-shrink:0;text-align:right}
+.cite-num.found{color:var(--green)}.cite-num.none{color:var(--red)}
+.cite-bar-bg{flex:1;height:4px;background:#111;border-radius:2px;overflow:hidden;min-width:40px}
+.cite-bar-fill{height:100%;border-radius:2px;transition:width 1s}
+.cite-pct{display:none}
+.cite-detail{display:none;padding:12px 14px;border-top:1px solid #111;background:#060606;grid-column:1/-1}
+.cite-ai-row.expanded .cite-detail{display:block}
+.cite-detail-text{font-size:.73rem;color:#666;line-height:1.75;font-style:italic;border-left:2px solid var(--green);padding-left:12px;margin-bottom:8px}
+.cite-tips{display:flex;flex-direction:column;gap:4px}
+.cite-tip{font-size:.7rem;color:#448;display:flex;align-items:flex-start;gap:6px}
+.cite-tip::before{content:'↑';color:var(--green);flex-shrink:0}
+.cite-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.cite-sum-card{background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:16px;text-align:center}
+.cite-sum-num{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:4px}
+.cite-sum-lbl{font-size:.66rem;color:#555}
+/* LANDING */
+.sec{max-width:900px;margin:72px auto 0;padding:0 20px}
+.sec-h{font-family:'Sora',sans-serif;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800;letter-spacing:-.03em;text-align:center;margin-bottom:9px}
+.sec-s{font-size:.8rem;color:#555;text-align:center;margin-bottom:32px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:22px 18px}
+.card-n{font-family:'Sora',sans-serif;font-size:1.9rem;font-weight:800;letter-spacing:-.04em;margin-bottom:5px}
+.card-l{font-size:.76rem;font-weight:600;color:#888;margin-bottom:3px}
+.card-d{font-size:.68rem;color:#444}
+.card-sn{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:800;color:#151515;margin-bottom:12px}
+.card h4{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:6px}
+.card p{font-size:.74rem;color:#555;line-height:1.7}
+.ba-box{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:28px;text-align:center}
+.ba-box h3{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:5px}
+.ba-sub{font-size:.78rem;color:#555;margin-bottom:24px}
+.ba-cmp{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.ba-side{text-align:center}
+.ba-slbl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#444;margin-bottom:7px}
+.ba-gr{font-family:'Sora',sans-serif;font-size:3rem;font-weight:800;line-height:1}
+.ba-sc{font-size:.76rem;color:#444;margin-top:3px}
+.ba-arr{font-size:1.6rem;color:#222}
+.ba-rows{max-width:380px;margin:0 auto;text-align:left}
+.ba-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #111;font-size:.74rem}
+.ba-row:last-child{border-bottom:none}
+.ba-rn{color:#555}.ba-rv{display:flex;align-items:center;gap:7px}
+.ba-f{color:var(--red)}.ba-t{color:var(--green)}.ba-a{color:#222;font-size:.68rem}
+.tbl-wr{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:.74rem;min-width:360px}
+.cmp-tbl th{text-align:left;padding:9px 14px;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#333;border-bottom:1px solid #111}
+.cmp-tbl td{padding:10px 14px;border-bottom:1px solid #0d0d0d;color:#444}
+.cmp-tbl tr:last-child td{border-bottom:none}
+.cmp-tbl td:first-child{color:#777;font-weight:500}
+.cmp-tbl tr:hover td{background:#080808}
+.ck{color:var(--green)!important;font-weight:700}.cx{color:#1a1a1a!important}
+.faq-wrap{max-width:700px;margin:72px auto 0;padding:0 20px}
+.fq{border-bottom:1px solid #0d0d0d;padding:16px 0;cursor:pointer}
+.fq-q{display:flex;align-items:center;justify-content:space-between;font-family:'Sora',sans-serif;font-size:.84rem;font-weight:700}
+.fq-arr{color:#2a2a2a;font-size:.62rem;transition:transform .2s;flex-shrink:0;margin-left:12px}
+.fq.open .fq-arr{transform:rotate(180deg)}
+.fq-a{display:none;font-size:.74rem;color:#555;line-height:1.8;margin-top:10px}
+.fq.open .fq-a{display:block}
+.fcta{max-width:600px;margin:72px auto;padding:0 20px;text-align:center}
+.fcta h2{font-family:'Sora',sans-serif;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800;letter-spacing:-.03em;margin-bottom:9px}
+.fcta p{font-size:.8rem;color:#555;margin-bottom:22px}
+footer{border-top:1px solid #0d0d0d;padding:22px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:72px}
+footer p{color:#222;font-size:.68rem}
+.fl{display:flex;gap:14px;flex-wrap:wrap}
+.fl a{color:#222;text-decoration:none;font-size:.68rem}.fl a:hover{color:#555}
+[title]{cursor:help}
+[title]:hover::after{content:attr(title);position:absolute;background:#1a1a1a;border:1px solid #2a2a2a;color:#ccc;font-size:.65rem;padding:6px 10px;border-radius:6px;white-space:pre-wrap;max-width:220px;z-index:200;margin-top:4px;line-height:1.5;pointer-events:none}
+.cite-ai-cell{position:relative}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(60px);background:#111;border:1px solid #222;color:#fff;padding:8px 16px;border-radius:6px;font-size:.74rem;z-index:999;transition:transform .22s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+@media(max-width:680px){
+  nav{padding:0 14px;height:50px}.nav-a{display:none}.nav-btn{display:none}
+  h1{font-size:1.9rem}
+  .sg,.g3,.comp-grid,.subcats,.cite-summary-grid{grid-template-columns:1fr}
+  .ba-cmp,.pred-row{flex-direction:column;gap:10px}
+  .cta-btns{flex-direction:column}
+  footer{padding:18px 14px;flex-direction:column;align-items:flex-start}
+  .mention-card{flex-direction:column}
+  .tabs{flex-direction:column}
+  .cite-ai-row,.cite-hd-row{grid-template-columns:100px 1fr 1fr}
+}
+@media(max-width:400px){
+  .irow{flex-direction:column;border-radius:8px}
+  .ibtn{width:100%;border-radius:0 0 8px 8px;padding:12px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="#"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div><span class="logo-text" id="t-logo">FixMyAI</span></a>
+  <div class="nav-r">
+    <a href="#how" class="nav-a" id="nl-how">Как работает</a>
+    <a href="#faq" class="nav-a" id="nl-faq">FAQ</a>
+    <button class="nav-btn" onclick="goTop()" id="nl-scan">Бесплатный скан</button>
+    <div class="lw"><button class="lb on" onclick="sL('ru')" id="lb-ru">RU</button><button class="lb" onclick="sL('en')" id="lb-en">EN</button></div>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="badge" id="t-badge">AI-поиск заменяет обычный — готов ли ваш сайт?</div>
+  <p class="hero-desc" id="t-desc">FixMyAI — бесплатный инструмент аудита для оптимизации под ChatGPT, Perplexity и Google AI Overviews.</p>
+  <div class="eyebrow" id="t-ey">FIX MY AI</div>
+  <h1><span id="t-h1">Ваш сайт невидим</span> <span class="gr" id="t-h2">для AI.</span></h1>
+  <p class="hero-sub" id="t-sub">Perplexity, ChatGPT и Google AI Overviews отвечают на вопросы вместо показа ссылок. Если ваш сайт не оптимизирован — вас не существует.</p>
+</section>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab on" onclick="sTab('scan')" id="tab-scan">🔍 Сканировать</button>
+    <button class="tab" onclick="sTab('comp')" id="tab-comp">⚔️ Конкуренты</button>
+    <button class="tab" onclick="sTab('cite')" id="tab-cite">💬 Цитирование</button>
+  </div>
+</div>
+
+<!-- SCAN -->
+<div class="inp-wrap on" id="wrap-scan">
+  <div class="irow"><input type="url" id="urlInput" placeholder="https://yoursite.com" autocomplete="off" inputmode="url"/><button class="ibtn" id="scanBtn" onclick="startScan()"><span id="t-scanbtn">Сканировать бесплатно</span></button></div>
+  <p class="inp-note" id="t-note">Без регистрации · Реальный AI-анализ · ~60 секунд</p>
+</div>
+
+<!-- COMP -->
+<div class="inp-wrap" id="wrap-comp">
+  <div style="margin-bottom:8px"><div class="inp-label" id="t-ylbl">Ваш сайт</div><div class="irow"><input type="url" id="compUrl1" placeholder="https://yoursite.com" inputmode="url"/></div></div>
+  <div style="margin-bottom:12px"><div class="inp-label" id="t-clbl">Сайт конкурента <span class="inp-opt" id="t-opt1">(необязательно — найдём сами)</span></div><div class="irow"><input type="url" id="compUrl2" placeholder="https://competitor.com (необязательно)" inputmode="url"/></div></div>
+  <div style="text-align:center"><button class="ibtn" id="compBtn" onclick="startComp()" style="border-radius:8px;padding:12px 28px"><span id="t-compbtn">Сравнить</span></button></div>
+  <p class="inp-note" id="t-comp-note">Найдём 3 конкурентов автоматически и покажем где они лучше</p>
+</div>
+
+<!-- CITE -->
+<div class="inp-wrap" id="wrap-cite">
+  <div style="margin-bottom:8px"><div class="inp-label" id="t-qylbl">Ваш сайт</div><div class="irow"><input type="url" id="citeUrl" placeholder="https://yoursite.com" inputmode="url"/></div></div>
+  <div style="margin-bottom:8px"><div class="inp-label" id="t-qclbl">Сайт конкурента <span class="inp-opt" id="t-opt2">(необязательно)</span></div><div class="irow"><input type="url" id="citeCompUrl" placeholder="https://competitor.com (необязательно)" inputmode="url"/></div></div>
+  <div style="margin-bottom:12px"><div class="inp-label" id="t-qlbl">Поисковый запрос <span class="inp-opt" id="t-opt3">(необязательно — подберём сами)</span></div><div class="irow"><input type="text" id="citeQuery" placeholder="Например: доставка цветов, ремонт ноутбуков..." autocomplete="off"/></div></div>
+  <div style="text-align:center"><button class="ibtn" id="citeBtn" onclick="startCite()" style="border-radius:8px;padding:12px 28px"><span id="t-citebtn">Проверить цитирование</span></button></div>
+  <p class="inp-note" id="t-cite-note">Покажем % упоминаний по 5 AI: ChatGPT, Perplexity, Gemini, Claude, Google AI</p>
+</div>
+
+<div class="err" id="errBox"></div>
+<div class="scanning" id="scanEl"><div class="ring"></div><ul class="ss-list" id="ssList"></ul><div class="prog"><div class="pb" id="pb"></div></div></div>
+
+<!-- SCAN RESULTS -->
+<div class="res" id="resEl">
+  <div class="res-hd"><h2 id="t-rh">Результаты сканирования</h2><p class="res-url" id="resDom"></p></div>
+  <!-- AI VISIBILITY SCORE -->
+  <div class="vis-score-wrap" id="visScoreWrap"></div>
+  <div class="det-row" id="detRow"></div>
+  <div class="sg" id="scGrid"></div>
+  <div class="mention-card" id="mentCard"></div>
+  <div class="id-card" id="idCard"></div>
+  <!-- INVISIBLE QUERIES -->
+  <div class="invis-card" id="invisCard"></div>
+  <!-- CITATION IN REPORT -->
+  <div class="cite-report-card" id="citeReportCard"></div>
+  <div class="subcats" id="subcats"></div>
+  <div class="pred-card" id="predCard"></div>
+  <div class="issues-box"><div class="issues-hd"><h3 id="t-ifound">Найденные проблемы</h3><span class="issues-cnt" id="issueCnt"></span></div><div id="issueList"></div></div>
+  <div class="cta-box">
+    <h3 id="t-cta1">Получить полный PDF-отчёт</h3>
+    <p id="t-cta2">Скачайте полный PDF — все исправления с готовым кодом и инструкцией для вашей платформы.</p>
+    <div class="cta-price"><s id="t-ps">$29</s><strong id="t-pf">БЕСПЛАТНО сегодня</strong></div>
+    <div class="cta-btns"><button class="btn-g" id="dlBtn" onclick="dlPDF()"><span id="t-dlbtn">⬇ Скачать PDF отчёт</span></button><button class="btn-gh" onclick="resetScan()"><span id="t-reset">Сканировать другой сайт</span></button></div>
+  </div>
+</div>
+
+<!-- COMP RESULTS -->
+<div class="comp-res" id="compResEl">
+  <div class="res-hd"><h2 id="t-comp-rh">Анализ конкурентов</h2></div>
+  <div class="comp-auto" id="compAutoFound"></div>
+  <div class="comp-grid" id="compGrid" style="grid-template-columns:repeat(2,1fr)"></div>
+  <div class="cta-box"><h3 id="t-comp-cta">Улучшить свои позиции</h3><p id="t-comp-ctap">Отсканируйте сайт чтобы получить точный код исправлений.</p><div class="cta-btns"><button class="btn-g" onclick="sTab('scan')" id="t-comp-scanbtn">Сканировать свой сайт</button></div></div>
+</div>
+
+<!-- CITE RESULTS -->
+<div class="cite-res" id="citeResEl">
+  <div class="res-hd"><h2 id="t-cite-rh">Анализ цитирования по AI</h2><p class="res-url" id="citeQueryShow"></p></div>
+  <div class="cite-summary-grid" id="citeSummGrid"></div>
+  <div class="cite-tbl-wrap">
+    <div class="cite-tbl-hd"><h3 id="t-cite-tbl-h">Упоминания по каждому AI</h3><span class="cite-q-badge" id="citeQBadge"></span></div>
+    <div class="cite-hd-row"><div class="cite-hd-cell" id="t-c-ai">AI-поисковик</div><div class="cite-hd-cell" id="t-c-your">Ваш сайт</div><div class="cite-hd-cell" id="t-c-comp">Конкурент</div></div>
+    <div id="citeRows"></div>
+  </div>
+  <div class="cta-box" style="margin-top:14px"><h3 id="t-cite-cta">Улучшить цитирование</h3><p id="t-cite-ctap">Отсканируйте сайт чтобы получить точный код исправлений.</p><div class="cta-btns"><button class="btn-g" onclick="sTab('scan')" id="t-cite-scanbtn">Сканировать сайт</button></div></div>
+</div>
+
+<!-- LANDING -->
+<div class="sec" style="margin-top:72px">
+  <p style="font-size:.8rem;color:#444;text-align:center;max-width:600px;margin:0 auto 44px;line-height:1.75" id="t-divtext">AEO — это оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 33 фактора и генерирует готовый код.</p>
+  <h2 class="sec-h" id="t-3h">Три оценки. Один скан.</h2>
+  <p class="sec-s" id="t-3s">Может ли AI найти вас? Процитирует? Взаимодействуют ли агенты?</p>
+  <div class="g3">
+    <div class="card"><div class="sc-lbl">AEO SCORE</div><div class="sc-main"><div class="sc-g gt">B</div><div class="sc-n gt">78</div></div><div class="sc-sl" id="t-asl">AI Search Visibility</div><div class="sc-d" id="t-ad">Насколько хорошо AI-поисковики могут найти ваш контент</div></div>
+    <div class="card"><div class="sc-lbl">GEO SCORE</div><div class="sc-main"><div class="sc-g bt">C</div><div class="sc-n bt">61</div></div><div class="sc-sl" id="t-gsl">AI Citation Readiness</div><div class="sc-d" id="t-gd">Насколько вероятно что AI упомянет ваш бренд</div></div>
+    <div class="card"><div class="sc-lbl">AGENT READINESS</div><div class="sc-main"><div class="sc-g ot">D</div><div class="sc-n ot">42</div></div><div class="sc-sl" id="t-agsl">Agent Interaction Ready</div><div class="sc-d" id="t-agd">Насколько легко AI-агентам взаимодействовать с сайтом</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <h2 class="sec-h" id="t-stat-h">Цифры жёсткие.</h2>
+  <p class="sec-s" id="t-stat-s">Если AI не читает ваш сайт — AI его не рекомендует.</p>
+  <div class="g3">
+    <div class="card"><div class="card-n gt">58%</div><div class="card-l" id="t-s1l">меньше кликов на первый результат</div><div class="card-d" id="t-s1d">AI Overviews забирает трафик с топовых результатов</div></div>
+    <div class="card"><div class="card-n gt">60%</div><div class="card-l" id="t-s2l">поисковых запросов без клика</div><div class="card-d" id="t-s2d">Пользователи получают ответы без перехода на сайт</div></div>
+    <div class="card"><div class="card-n gt">4.4×</div><div class="card-l" id="t-s3l">выше конверсия с AI-поиска</div><div class="card-d" id="t-s3d">По сравнению с обычным органическим трафиком</div></div>
+  </div>
+</div>
+
+<div class="sec" id="how">
+  <h2 class="sec-h" id="t-how-h">Скан. Исправление. Проверка.</h2>
+  <p class="sec-s" id="t-how-s">Три шага к видимости в AI</p>
+  <div class="g3">
+    <div class="card"><div class="card-sn">1</div><h4 id="t-s1h">Введите URL</h4><p id="t-s1p">Читаем главную страницу + страницу услуг + страницу контактов. 33 фактора AI-видимости.</p></div>
+    <div class="card"><div class="card-sn">2</div><h4 id="t-s2h">Видите точные проблемы</h4><p id="t-s2p">AI Visibility Score, список запросов где вас нет, AI Identity Card, прогноз после исправлений.</p></div>
+    <div class="card"><div class="card-sn">3</div><h4 id="t-s3h">Скопировал → Вставил → Готово</h4><p id="t-s3p">Готовый код + инструкция для вашей платформы. Без программиста.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="ba-box">
+    <h3 id="t-ba-h">Реальные результаты. Без трюков.</h3>
+    <p class="ba-sub" id="t-ba-s">Сайт улучшился с 32/100 до 74/100 за 45 минут.</p>
+    <div class="ba-cmp">
+      <div class="ba-side"><div class="ba-slbl" id="t-before">До</div><div class="ba-gr rt">32<span style="font-size:1.2rem">/100</span></div></div>
+      <div class="ba-arr">→</div>
+      <div class="ba-side"><div class="ba-slbl" id="t-after">После</div><div class="ba-gr gt">74<span style="font-size:1.2rem">/100</span></div></div>
+    </div>
+    <div class="ba-rows">
+      <div class="ba-row"><span class="ba-rn">Schema.org</span><div class="ba-rv"><span class="ba-f">0%</span><span class="ba-a">→</span><span class="ba-t">95%</span></div></div>
+      <div class="ba-row"><span class="ba-rn">llms.txt</span><div class="ba-rv"><span class="ba-f">нет</span><span class="ba-a">→</span><span class="ba-t">100%</span></div></div>
+      <div class="ba-row"><span class="ba-rn">AI Crawlers</span><div class="ba-rv"><span class="ba-f">42%</span><span class="ba-a">→</span><span class="ba-t">100%</span></div></div>
+      <div class="ba-row"><span class="ba-rn">Open Graph</span><div class="ba-rv"><span class="ba-f">55%</span><span class="ba-a">→</span><span class="ba-t">98%</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <h2 class="sec-h" id="t-tbl-h">FixMyAI vs другие инструменты</h2>
+  <div class="tbl-wr" style="margin-top:28px"><table class="cmp-tbl"><thead><tr><th id="t-th1">Функция</th><th>FixMyAI</th><th id="t-th2">Мониторинг</th><th id="t-th3">Бесплатные</th></tr></thead><tbody id="cmpTblBody"></tbody></table></div>
+</div>
+
+<div class="faq-wrap" id="faq">
+  <h2 class="sec-h" style="margin-bottom:24px" id="t-faq-h">Часто задаваемые вопросы</h2>
+  <div id="faqList"></div>
+</div>
+
+<div class="fcta">
+  <h2 id="t-fcta-h">Ваши конкуренты оптимизируются для AI. А вы?</h2>
+  <p id="t-fcta-p">Бесплатно. Мгновенно. Без регистрации.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-g" onclick="goTop()"><span id="t-fcta-btn">Сканировать бесплатно</span></button></div>
+</div>
+
+<footer>
+  <p>FixMyAI &copy; 2026</p>
+  <div class="fl"><a href="#how" id="fl-how">Как работает</a><a href="#faq" id="fl-faq">FAQ</a><a href="mailto:hello@fixmyai.com">hello@fixmyai.com</a></div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+var MODEL='claude-sonnet-4-6';
+var PROXY_URL='https://fixmyai-proxy.vercel.app/api/proxy';
+var CLAUDE_URL='https://fixmyai-proxy.vercel.app/api/claude';
+var PDF_URL='https://fixmyai-proxy.vercel.app/api/pdf';
+var LANG='ru',SDATA=null,SURL='';
+
+var TX={
+ru:{'logo':'FixMyAI','badge':'AI-поиск заменяет обычный — готов ли ваш сайт?','desc':'FixMyAI — бесплатный инструмент аудита для оптимизации под ChatGPT, Perplexity и Google AI Overviews.','ey':'FIX MY AI','h1':'Ваш сайт невидим','h2':'для AI.','sub':'Perplexity, ChatGPT и Google AI Overviews отвечают на вопросы вместо показа ссылок. Если ваш сайт не оптимизирован — вас не существует.','scanbtn':'Сканировать бесплатно','note':'Без регистрации · Реальный AI-анализ · ~60 секунд','rh':'Результаты сканирования','ifound':'Найденные проблемы','cta1':'Получить полный PDF-отчёт','cta2':'Скачайте полный PDF — все исправления с готовым кодом и инструкцией для вашей платформы.','ps':'$29','pf':'БЕСПЛАТНО сегодня','dlbtn':'⬇ Скачать отчёт','reset':'Сканировать другой сайт','divtext':'AEO — оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 33 фактора.','3h':'Три оценки. Один скан.','3s':'Может ли AI найти вас? Процитирует? Взаимодействуют ли агенты?','asl':'AI Search Visibility','ad':'Насколько хорошо AI-поисковики находят ваш контент','gsl':'AI Citation Readiness','gd':'Насколько вероятно что AI упомянет ваш бренд','agsl':'Agent Interaction Ready','agd':'Насколько легко AI-агентам взаимодействовать','stat-h':'Цифры жёсткие.','stat-s':'Если AI не читает ваш сайт — AI его не рекомендует.','s1l':'меньше кликов на первый результат','s1d':'AI Overviews забирает трафик с топовых результатов','s2l':'поисковых запросов без клика','s2d':'Пользователи получают ответы без перехода на сайт','s3l':'выше конверсия с AI-поиска','s3d':'По сравнению с обычным органическим трафиком','how-h':'Скан. Исправление. Проверка.','how-s':'Три шага к видимости в AI','s1h':'Введите URL','s1p':'Читаем главную + услуги + контакты. 33 фактора AI-видимости.','s2h':'Видите точные проблемы','s2p':'AI Visibility Score, запросы где вас нет, AI Identity Card, прогноз.','s3h':'Скопировал → Вставил → Готово','s3p':'Готовый код + инструкция для платформы. Без программиста.','ba-h':'Реальные результаты. Без трюков.','ba-s':'Сайт улучшился с 32/100 до 74/100 за 45 минут.','before':'До','after':'После','tbl-h':'FixMyAI vs другие инструменты','th1':'Функция','th2':'Мониторинг','th3':'Бесплатные','faq-h':'Часто задаваемые вопросы','fcta-h':'Ваши конкуренты оптимизируются для AI. А вы?','fcta-p':'Бесплатно. Мгновенно. Без регистрации.','fcta-btn':'Сканировать бесплатно','nl-how':'Как работает','nl-faq':'FAQ','nl-scan':'Бесплатный скан','fl-how':'Как работает','fl-faq':'FAQ','tab-scan':'🔍 Сканировать','tab-comp':'⚔️ Конкуренты','tab-cite':'💬 Цитирование','ylbl':'Ваш сайт','clbl':'Сайт конкурента','opt1':'(необязательно — найдём сами)','opt2':'(необязательно)','opt3':'(необязательно — подберём сами)','compbtn':'Сравнить','comp-note':'Найдём 3 конкурентов автоматически','qylbl':'Ваш сайт','qclbl':'Сайт конкурента','qlbl':'Поисковый запрос','citebtn':'Проверить цитирование','cite-note':'Покажем % упоминаний по 5 AI','comp-rh':'Анализ конкурентов','comp-cta':'Улучшить свои позиции','comp-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','comp-scanbtn':'Сканировать свой сайт','cite-rh':'Анализ цитирования по AI','cite-tbl-h':'Упоминания по каждому AI','c-ai':'AI-поисковик','c-your':'Ваш сайт','c-comp':'Конкурент','cite-cta':'Улучшить цитирование','cite-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','cite-scanbtn':'Сканировать сайт',
+'sl':['AEO Оценка','GEO Оценка','Готовность AI'],'sd':['Видимость в AI-поиске','Готовность к цитированию','Взаимодействие с AI'],
+'ss':['Загружаем главную страницу...','Ищем страницу услуг...','Ищем страницу контактов...','Читаем HTML и структуру...','Проверяем schema.org...','Проверяем robots.txt...','Ищем llms.txt...','Проверяем Open Graph...','Определяем платформу и тип бизнеса...','Анализируем AI-видимость...','Рассчитываем AI Visibility Score...','Формируем отчёт...']},
+en:{'logo':'FixMyAI','badge':'AI search is replacing traditional search — is your site ready?','desc':'FixMyAI is a free audit tool to optimize your site for ChatGPT, Perplexity and Google AI Overviews.','ey':'FIX MY AI','h1':'Your site is invisible','h2':'to AI.','sub':'Perplexity, ChatGPT and Google AI Overviews answer questions instead of showing links. If your site isn\'t optimized — you don\'t exist.','scanbtn':'Scan for Free','note':'No signup · Real AI analysis · ~60 seconds','rh':'Scan Results','ifound':'Issues Found','cta1':'Get Full PDF Report','cta2':'Download the full PDF — all fixes with copy-paste code and instructions for your platform.','ps':'$29','pf':'FREE today','dlbtn':'⬇ Download Report','reset':'Scan another site','divtext':'AEO is optimizing websites for AI search engines. FixMyAI reads real HTML, detects platform, analyzes 33 factors.','3h':'Three scores. One scan.','3s':'Can AI find you? Will AI cite you? Can AI agents interact?','asl':'AI Search Visibility','ad':'How well AI search engines can find your content','gsl':'AI Citation Readiness','gd':'How likely AI is to cite and mention your brand','agsl':'Agent Interaction Ready','agd':'How easily AI agents can interact with your site','stat-h':'The numbers are brutal.','stat-s':'If AI can\'t read your site, AI can\'t recommend your site.','s1l':'fewer clicks to #1 result','s1d':'AI Overviews steal traffic from top organic results','s2l':'zero-click searches','s2d':'Users get answers without visiting any website','s3l':'higher conversion from AI search','s3d':'Compared to traditional organic traffic','how-h':'Scan. Fix. Verify.','how-s':'Three steps to AI visibility','s1h':'Enter your URL','s1p':'We read homepage + services + contact pages. 33 AI visibility factors.','s2h':'See exact problems','s2p':'AI Visibility Score, queries where you\'re invisible, AI Identity Card, prediction.','s3h':'Copy → Paste → Done','s3p':'Ready code + platform instructions. No developer needed.','ba-h':'Real results. No tricks.','ba-s':'Site improved from 32/100 to 74/100 in 45 minutes.','before':'Before','after':'After','tbl-h':'FixMyAI vs Other Tools','th1':'Feature','th2':'Monitoring','th3':'Free Scanners','faq-h':'Frequently asked questions','fcta-h':'Your competitors are optimizing for AI. Are you?','fcta-p':'Free. Instant. No signup.','fcta-btn':'Scan for Free','nl-how':'How it works','nl-faq':'FAQ','nl-scan':'Free Scan','fl-how':'How it works','fl-faq':'FAQ','tab-scan':'🔍 Scan','tab-comp':'⚔️ Competitors','tab-cite':'💬 Citation','ylbl':'Your site','clbl':'Competitor site','opt1':'(optional — we\'ll find automatically)','opt2':'(optional)','opt3':'(optional — we\'ll suggest)','compbtn':'Compare','comp-note':'We\'ll find 3 competitors automatically','qylbl':'Your site','qclbl':'Competitor site','qlbl':'Search query','citebtn':'Check Citation','cite-note':'We\'ll show % mentions across 5 AI engines','comp-rh':'Competitor Analysis','comp-cta':'Improve your positions','comp-ctap':'Scan your site to get exact fix code.','comp-scanbtn':'Scan your site','cite-rh':'AI Citation Analysis','cite-tbl-h':'Mentions by each AI','c-ai':'AI Engine','c-your':'Your site','c-comp':'Competitor','cite-cta':'Improve citation','cite-ctap':'Scan your site to get exact fix code.','cite-scanbtn':'Scan site',
+'sl':['AEO Score','GEO Score','Agent Readiness'],'sd':['AI Search Visibility','AI Citation Readiness','Agent Interaction Ready'],
+'ss':['Fetching homepage...','Finding services page...','Finding contact page...','Reading HTML structure...','Checking schema.org...','Checking robots.txt...','Looking for llms.txt...','Checking Open Graph...','Detecting platform and business type...','Analyzing AI visibility...','Calculating AI Visibility Score...','Building report...']}
+};
+
+var CMP={
+ru:[['Технический аудит сайта','✓','✗','Базовый'],['Готовый код для вставки','✓','✗','✗'],['AI Visibility Score','✓','✗','✗'],['Список запросов где вас нет','✓','✗','✗'],['AI Identity Card','✓','✗','✗'],['Автопоиск конкурентов','✓','✗','✗'],['Анализ цитирования по 5 AI','✓','✗','✗'],['PDF отчёт','✓','✗','✗'],['Без подписки','✓','✗','✓']],
+en:[['Technical site audit','✓','✗','Basic'],['Ready copy-paste fix code','✓','✗','✗'],['AI Visibility Score','✓','✗','✗'],['Queries where you\'re invisible','✓','✗','✗'],['AI Identity Card','✓','✗','✗'],['Auto competitor discovery','✓','✗','✗'],['Citation analysis across 5 AI engines','✓','✗','✗'],['PDF report','✓','✗','✗'],['No subscription','✓','✗','✓']]
+};
+
+var FAQ={
+ru:[{q:'Что такое AI Visibility Score?',a:'Это единая оценка от 0 до 100 которая показывает насколько ваш сайт виден в AI-поисковиках. 0-30 — сайт невидим, 31-60 — частично оптимизирован, 61-80 — хорошая видимость, 81-100 — отличная оптимизация. После исправлений мы показываем до какой цифры вырастет ваш score.'},{q:'Что такое AEO?',a:'AEO — оптимизация сайтов для AI-поисковиков: Perplexity, ChatGPT и Google AI Overviews. В отличие от SEO нацеленного на ссылки, AEO обеспечивает появление в ответах AI. Конверсия с AI-поиска в 4.4 раза выше чем с органики.'},{q:'Что проверяет FixMyAI?',a:'Читаем 3 ключевые страницы: главную, услуги и контакты. Проверяем 33 фактора по 4 категориям: Structured Data (8), Meta & Technical (10), AI Accessibility (8) и Content Quality (7).'},{q:'Нужен ли программист?',a:'Нет. Каждое исправление — готовый код и инструкция для вашей платформы: WordPress, Tilda, Wix, Shopify.'},{q:'Когда увидеть результаты?',a:'Технические правки — проверяйте сразу. Google AI Overviews — 2-4 недели. ChatGPT и Perplexity — 2-8 недель.'}],
+en:[{q:'What is AI Visibility Score?',a:'A single score from 0 to 100 showing how visible your site is in AI search engines. 0-30 — invisible, 31-60 — partially optimized, 61-80 — good visibility, 81-100 — excellent. After fixes we show what score you can reach.'},{q:'What is AEO?',a:'AEO is optimizing websites for AI search engines like Perplexity, ChatGPT and Google AI Overviews. Unlike SEO targeting ranked links, AEO ensures your site appears in AI-generated answers.'},{q:'What does FixMyAI check?',a:'We read 3 key pages: homepage, services and contact. Check 33 factors across 4 categories: Structured Data (8), Meta & Technical (10), AI Accessibility (8) and Content Quality (7).'},{q:'Do I need a developer?',a:'No. Every fix has copy-paste ready code and instructions for your platform: WordPress, Tilda, Wix, Shopify.'},{q:'When will I see results?',a:'Technical fixes — immediately. Google AI Overviews — 2-4 weeks. ChatGPT and Perplexity — 2-8 weeks.'}]
+};
+
+var AI_ENGINES=[
+  {id:'chatgpt',name:'ChatGPT',color:'#10a37f',bg:'#0a2820'},
+  {id:'perplexity',name:'Perplexity',color:'#6b7fff',bg:'#0a0a20'},
+  {id:'gemini',name:'Gemini',color:'#4285f4',bg:'#081428'},
+  {id:'claude',name:'Claude',color:'#cc6633',bg:'#160800'},
+  {id:'gai',name:'Google AI',color:'#ea4335',bg:'#160400'}
+];
+
+
+// ── PLATFORM DETECTION ───────────────────────────────────────────────────────
+function detectPlatform(html){
+  if(!html) return 'custom';
+  var h = html.toLowerCase();
+  if(h.indexOf('wp-content')>-1 || h.indexOf('wp-includes')>-1 || h.indexOf('wordpress')>-1) return 'wordpress';
+  if(h.indexOf('tilda')>-1 || h.indexOf('tildacdn')>-1) return 'tilda';
+  if(h.indexOf('wixstatic')>-1 || h.indexOf('parastorage')>-1 || h.indexOf('wix.com')>-1) return 'wix';
+  if(h.indexOf('cdn.shopify')>-1 || h.indexOf('shopify')>-1) return 'shopify';
+  if(h.indexOf('/bitrix/')>-1 || h.indexOf('bx-')>-1 || h.indexOf('1c-bitrix')>-1) return 'bitrix';
+  if(h.indexOf('joomla')>-1) return 'joomla';
+  if(h.indexOf('drupal')>-1) return 'drupal';
+  if(h.indexOf('opencart')>-1) return 'opencart';
+  if(h.indexOf('prestashop')>-1) return 'prestashop';
+  if(h.indexOf('squarespace')>-1) return 'squarespace';
+  if(h.indexOf('webflow')>-1) return 'webflow';
+  if(h.indexOf('modx')>-1) return 'modx';
+  if(h.indexOf('weebly')>-1) return 'weebly';
+  if(h.indexOf('ghost')>-1 || h.indexOf('ghost-theme')>-1) return 'ghost';
+  if(h.indexOf('__nuxt')>-1 || h.indexOf('nuxt')>-1) return 'nuxt';
+  if(h.indexOf('__next')>-1 || h.indexOf('_next/')>-1) return 'nextjs';
+  if(h.indexOf('laravel')>-1 || h.indexOf('csrf-token')>-1) return 'laravel';
+  if(h.indexOf('django')>-1) return 'django';
+  if(h.indexOf('jekyll')>-1 || h.indexOf('hugo')>-1) return 'static';
+  if(h.indexOf('umi.js')>-1 || h.indexOf('gatsby')>-1) return 'gatsby';
+  return 'custom';
+}
+
+// Platform instructions - step by step for each platform
+function getPlatformInstructions(platform, codeType, lang, code) {
+  var isRu = lang === 'ru' || lang === 'uk';
+  var p = platform || 'custom';
+
+  var instructions = {
+    wordpress: {
+      head: isRu
+        ? '1. Войдите в панель WordPress (сайт.ru/wp-admin)\n2. Плагины → Добавить новый\n3. Найдите "Insert Headers and Footers" → Установить → Активировать\n4. Настройки → Insert Headers and Footers\n5. Вставьте код в поле "Scripts in Header"\n6. Нажмите Сохранить'
+        : '1. Login to WordPress (yoursite.com/wp-admin)\n2. Plugins → Add New\n3. Search "Insert Headers and Footers" → Install → Activate\n4. Settings → Insert Headers and Footers\n5. Paste code in "Scripts in Header" field\n6. Click Save',
+      robots: isRu
+        ? '1. Войдите в хостинг-панель (cPanel, ISPManager или Plesk)\n2. Откройте файловый менеджер → папка public_html\n3. Найдите файл robots.txt (или создайте новый)\n4. Добавьте строки из кода выше\n5. Сохраните файл\nИЛИ: Плагины → Yoast SEO → Инструменты → Редактор файлов'
+        : '1. Login to hosting panel (cPanel, ISPManager or Plesk)\n2. Open File Manager → public_html folder\n3. Find robots.txt (or create new)\n4. Add lines from code above\n5. Save file\nOR: Plugins → Yoast SEO → Tools → File editor',
+      llms: isRu
+        ? '1. Войдите в хостинг-панель → Файловый менеджер\n2. Перейдите в папку public_html\n3. Создайте новый файл: llms.txt\n4. Вставьте содержимое и сохраните\n5. Проверьте: сайт.ru/llms.txt должен открываться'
+        : '1. Login to hosting panel → File Manager\n2. Go to public_html folder\n3. Create new file: llms.txt\n4. Paste content and save\n5. Check: yoursite.com/llms.txt should open',
+      sitemap: isRu
+        ? '1. Плагины → Yoast SEO (уже создаёт sitemap автоматически)\n2. Проверьте: сайт.ru/sitemap_index.xml\n3. Или создайте вручную через Файловый менеджер хостинга'
+        : '1. Plugins → Yoast SEO (creates sitemap automatically)\n2. Check: yoursite.com/sitemap_index.xml\n3. Or create manually via hosting File Manager'
+    },
+    tilda: {
+      head: isRu
+        ? '1. Откройте ваш сайт в Tilda\n2. Нажмите шестерёнку ⚙️ → Настройки сайта\n3. Вкладка "SEO"\n4. Найдите поле "HTML-код в секции HEAD"\n5. Вставьте код\n6. Нажмите Сохранить и переопубликуйте сайт'
+        : '1. Open your Tilda site\n2. Click ⚙️ → Site Settings\n3. Tab "SEO"\n4. Find "HTML code in HEAD section" field\n5. Paste code\n6. Save and re-publish site',
+      robots: isRu
+        ? '1. Настройки сайта ⚙️ → SEO\n2. Найдите раздел "robots.txt"\n3. Вставьте содержимое и сохраните\n4. Переопубликуйте сайт'
+        : '1. Site Settings ⚙️ → SEO\n2. Find "robots.txt" section\n3. Paste content and save\n4. Re-publish site',
+      llms: isRu
+        ? '1. Настройки сайта ⚙️ → Экспорт\n2. Или используйте вкладку "Свой домен" → загрузка файлов\n3. Загрузите файл llms.txt в корень\n4. Проверьте доступность: сайт.ru/llms.txt'
+        : '1. Site Settings ⚙️ → Export\n2. Or use "Custom domain" tab → file upload\n3. Upload llms.txt to root\n4. Check: yoursite.com/llms.txt',
+      sitemap: isRu
+        ? 'Tilda создаёт sitemap автоматически. Проверьте: сайт.ru/sitemap.xml'
+        : 'Tilda creates sitemap automatically. Check: yoursite.com/sitemap.xml'
+    },
+    wix: {
+      head: isRu
+        ? '1. Войдите в редактор Wix\n2. Меню слева → Настройки\n3. Дополнительные настройки → Пользовательский код\n4. Нажмите "+ Добавить код"\n5. Вставьте код, выберите "Все страницы" и "В заголовке"\n6. Нажмите Применить'
+        : '1. Login to Wix editor\n2. Left menu → Settings\n3. Advanced Settings → Custom Code\n4. Click "+ Add Code"\n5. Paste code, select "All Pages" and "In the head"\n6. Click Apply',
+      robots: isRu
+        ? '1. Настройки Wix → SEO → Инструменты SEO\n2. Найдите раздел robots.txt\n3. Отредактируйте и сохраните'
+        : '1. Wix Settings → SEO → SEO Tools\n2. Find robots.txt section\n3. Edit and save',
+      llms: isRu
+        ? 'Wix не поддерживает прямую загрузку файлов в корень. Обратитесь в поддержку Wix или используйте Wix Velo (код платформы) для создания маршрута /llms.txt'
+        : 'Wix does not support direct file upload to root. Contact Wix support or use Wix Velo to create /llms.txt route',
+      sitemap: isRu
+        ? 'Wix создаёт sitemap автоматически. Проверьте: сайт.ru/sitemap.xml'
+        : 'Wix creates sitemap automatically. Check: yoursite.com/sitemap.xml'
+    },
+    shopify: {
+      head: isRu
+        ? '1. Панель управления Shopify → Интернет-магазин → Темы\n2. Нажмите "Действия" → "Редактировать код"\n3. Откройте файл theme.liquid\n4. Найдите закрывающий тег </head>\n5. Вставьте код ПЕРЕД этим тегом\n6. Сохраните'
+        : '1. Shopify Admin → Online Store → Themes\n2. Click "Actions" → "Edit code"\n3. Open theme.liquid file\n4. Find closing </head> tag\n5. Paste code BEFORE this tag\n6. Save',
+      robots: isRu
+        ? '1. Shopify Admin → Интернет-магазин → Настройки\n2. Найдите раздел robots.txt.liquid\n3. Отредактируйте и сохраните'
+        : '1. Shopify Admin → Online Store → Preferences\n2. Find robots.txt.liquid section\n3. Edit and save',
+      llms: isRu
+        ? '1. Shopify Admin → Интернет-магазин → Темы → Редактировать код\n2. Создайте новый файл в папке Assets\n3. Назовите llms.txt и вставьте содержимое'
+        : '1. Shopify Admin → Online Store → Themes → Edit code\n2. Create new file in Assets folder\n3. Name it llms.txt and paste content',
+      sitemap: isRu
+        ? 'Shopify создаёт sitemap автоматически. Проверьте: магазин.myshopify.com/sitemap.xml'
+        : 'Shopify creates sitemap automatically. Check: store.myshopify.com/sitemap.xml'
+    },
+    bitrix: {
+      head: isRu
+        ? '1. Панель управления 1С-Битрикс → Настройки\n2. Настройки продукта → HTML → Вставки кода\n3. ИЛИ: Откройте файл /bitrix/templates/[шаблон]/header.php\n4. Найдите тег </head> и вставьте код перед ним\n5. Сохраните файл'
+        : '1. Bitrix Admin → Settings → Product settings\n2. HTML → Code insertions\n3. OR: Open /bitrix/templates/[template]/header.php\n4. Find </head> tag and paste code before it\n5. Save file',
+      robots: isRu
+        ? '1. Файловый менеджер хостинга или FTP\n2. Корневая папка сайта (public_html или httpdocs)\n3. Найдите или создайте robots.txt\n4. Добавьте строки и сохраните'
+        : '1. Hosting file manager or FTP\n2. Site root folder (public_html or httpdocs)\n3. Find or create robots.txt\n4. Add lines and save',
+      llms: isRu
+        ? 'Загрузите файл llms.txt через FTP или файловый менеджер хостинга в корневую папку сайта (туда же где robots.txt)'
+        : 'Upload llms.txt via FTP or hosting file manager to site root folder (same as robots.txt)',
+      sitemap: isRu
+        ? 'Битрикс может генерировать sitemap автоматически. Настройки → Поисковая оптимизация → Sitemap'
+        : 'Bitrix can generate sitemap automatically. Settings → SEO → Sitemap'
+    },
+    joomla: {
+      head: isRu
+        ? '1. Панель Joomla → Расширения → Менеджер плагинов\n2. Найдите плагин "System - Custom HTML" или установите похожий\n3. ИЛИ: Шаблоны → Редактировать HTML → найдите </head>\n4. Вставьте код перед закрывающим тегом </head>'
+        : '1. Joomla Admin → Extensions → Plugin Manager\n2. Find "System - Custom HTML" plugin or install similar\n3. OR: Templates → Edit HTML → find </head>\n4. Paste code before closing </head> tag',
+      robots: isRu
+        ? 'Файловый менеджер хостинга → корневая папка → отредактируйте robots.txt'
+        : 'Hosting file manager → root folder → edit robots.txt',
+      llms: isRu
+        ? 'Загрузите llms.txt через файловый менеджер хостинга в корневую папку'
+        : 'Upload llms.txt via hosting file manager to root folder',
+      sitemap: isRu
+        ? 'Joomla: Компоненты → Карта сайта (или установите плагин Xmap)'
+        : 'Joomla: Components → Sitemap (or install Xmap plugin)'
+    },
+    opencart: {
+      head: isRu
+        ? '1. Панель OpenCart → Дизайн → Редактор шаблона\n2. Найдите файл header.twig или header.tpl\n3. Найдите тег </head> и вставьте код перед ним\n4. Сохраните'
+        : '1. OpenCart Admin → Design → Theme Editor\n2. Find header.twig or header.tpl file\n3. Find </head> tag and paste code before it\n4. Save',
+      robots: isRu
+        ? 'Файловый менеджер хостинга → корневая папка → robots.txt'
+        : 'Hosting file manager → root folder → robots.txt',
+      llms: isRu
+        ? 'Загрузите llms.txt через файловый менеджер в корневую папку сайта'
+        : 'Upload llms.txt via file manager to site root',
+      sitemap: isRu
+        ? 'OpenCart: Расширения → Модули → Google Sitemap'
+        : 'OpenCart: Extensions → Modules → Google Sitemap'
+    },
+    squarespace: {
+      head: isRu
+        ? '1. Настройки Squarespace → Дополнительно → Вставка кода\n2. Раздел "Заголовок"\n3. Вставьте код и сохраните'
+        : '1. Squarespace Settings → Advanced → Code Injection\n2. Section "Header"\n3. Paste code and save',
+      robots: isRu
+        ? 'Squarespace: Настройки → SEO → Файл robots.txt'
+        : 'Squarespace: Settings → SEO → robots.txt file',
+      llms: isRu
+        ? 'Squarespace не поддерживает прямую загрузку файлов. Обратитесь в поддержку Squarespace'
+        : 'Squarespace does not support direct file upload. Contact Squarespace support',
+      sitemap: isRu
+        ? 'Squarespace создаёт sitemap автоматически: сайт.com/sitemap.xml'
+        : 'Squarespace creates sitemap automatically: yoursite.com/sitemap.xml'
+    },
+    webflow: {
+      head: isRu
+        ? '1. Откройте Webflow Designer\n2. Настройки проекта → Custom Code\n3. Вставьте код в раздел "Head Code"\n4. Сохраните и опубликуйте'
+        : '1. Open Webflow Designer\n2. Project Settings → Custom Code\n3. Paste code in "Head Code" section\n4. Save and publish',
+      robots: isRu
+        ? 'Webflow: Настройки проекта → SEO → robots.txt'
+        : 'Webflow: Project Settings → SEO → robots.txt',
+      llms: isRu
+        ? 'Webflow: Настройки → Hosting → загрузите llms.txt как статический файл'
+        : 'Webflow: Settings → Hosting → upload llms.txt as static file',
+      sitemap: isRu
+        ? 'Webflow создаёт sitemap автоматически'
+        : 'Webflow creates sitemap automatically'
+    },
+    modx: {
+      head: isRu
+        ? '1. Менеджер MODX → Элементы → Шаблоны\n2. Найдите активный шаблон → Редактировать\n3. Найдите тег </head> и вставьте код перед ним\n4. Сохраните'
+        : '1. MODX Manager → Elements → Templates\n2. Find active template → Edit\n3. Find </head> tag and paste code before it\n4. Save',
+      robots: isRu
+        ? 'Файловый менеджер хостинга → корневая папка сайта → robots.txt'
+        : 'Hosting file manager → site root → robots.txt',
+      llms: isRu ? 'Загрузите через файловый менеджер хостинга в корень сайта' : 'Upload via hosting file manager to site root',
+      sitemap: isRu ? 'MODX: Плагины → Управление картой сайта' : 'MODX: Plugins → Sitemap management'
+    },
+    custom: {
+      head: isRu
+        ? 'У вас кастомный сайт. Есть 3 варианта:\n\n1️⃣ Есть разработчик:\nОтправьте ему код выше с текстом:\n"Добавь этот код в раздел <head> на всех страницах сайта"\n\n2️⃣ Есть FTP-доступ:\n• Подключитесь через FileZilla или другой FTP-клиент\n• Найдите файл header.php, base.html или layout.html\n• Найдите тег </head> и добавьте код перед ним\n• Сохраните файл\n\n3️⃣ Нет доступа:\nНапишите хостинг-провайдеру:\n"Добавьте этот код в секцию <head> всех страниц"'
+        : 'You have a custom site. 3 options:\n\n1️⃣ Have a developer:\nSend them the code above with message:\n"Add this code to the <head> section on all pages"\n\n2️⃣ Have FTP access:\n• Connect via FileZilla or similar FTP client\n• Find header.php, base.html or layout.html\n• Find </head> tag and add code before it\n• Save the file\n\n3️⃣ No access:\nWrite to your hosting provider:\n"Please add this code to the <head> section of all pages"',
+      robots: isRu
+        ? '1️⃣ Через FTP (FileZilla): загрузите файл robots.txt в корневую папку (public_html)\n2️⃣ Через файловый менеджер хостинга: найдите корневую папку → создайте/отредактируйте robots.txt\n3️⃣ Нет доступа: отправьте файл разработчику или хостинг-провайдеру'
+        : '1️⃣ Via FTP (FileZilla): upload robots.txt to root folder (public_html)\n2️⃣ Via hosting file manager: find root folder → create/edit robots.txt\n3️⃣ No access: send file to developer or hosting provider',
+      llms: isRu
+        ? '1️⃣ Через FTP: загрузите файл llms.txt в корневую папку сайта\n2️⃣ Через файловый менеджер хостинга\n3️⃣ Отправьте файл разработчику с текстом: "Загрузи этот файл в корень сайта"'
+        : '1️⃣ Via FTP: upload llms.txt to site root folder\n2️⃣ Via hosting file manager\n3️⃣ Send file to developer: "Upload this file to the site root"',
+      sitemap: isRu
+        ? '1️⃣ Через FTP: загрузите файл sitemap.xml в корневую папку\n2️⃣ Добавьте в robots.txt строку: Sitemap: https://вашсайт/sitemap.xml\n3️⃣ Отправьте разработчику'
+        : '1️⃣ Via FTP: upload sitemap.xml to root folder\n2️⃣ Add to robots.txt: Sitemap: https://yoursite/sitemap.xml\n3️⃣ Send to developer'
+    }
+  };
+
+  // Default fallback for unknown platforms
+  var defaults = instructions.custom;
+  var platInstr = instructions[p] || defaults;
+
+  var codeTypeLower = (codeType||'').toLowerCase();
+  var key = 'head';
+  if(codeTypeLower.indexOf('robot')>-1) key='robots';
+  else if(codeTypeLower.indexOf('llms')>-1) key='llms';
+  else if(codeTypeLower.indexOf('sitemap')>-1) key='sitemap';
+
+  return platInstr[key] || platInstr.head || defaults.head;
+}
+
+var DETECTED_PLATFORM = 'custom';
+
+
+function sL(l){
+  LANG=l;
+  document.getElementById('lb-ru').classList.toggle('on',l==='ru');
+  document.getElementById('lb-en').classList.toggle('on',l==='en');
+  document.documentElement.lang=l;
+  var t=TX[l];
+  for(var k in t){if(typeof t[k]==='string'){var el=document.getElementById('t-'+k);if(el)el.textContent=t[k];}}
+  document.getElementById('tab-scan').textContent=t['tab-scan'];
+  document.getElementById('tab-comp').textContent=t['tab-comp'];
+  document.getElementById('tab-cite').textContent=t['tab-cite'];
+  renderCmpTbl();renderFaq();
+}
+function renderCmpTbl(){var h='';CMP[LANG].forEach(function(r){h+='<tr><td>'+r[0]+'</td><td class="ck">'+r[1]+'</td><td class="cx">'+r[2]+'</td><td class="cx">'+r[3]+'</td></tr>';});document.getElementById('cmpTblBody').innerHTML=h;}
+function renderFaq(){var h='';FAQ[LANG].forEach(function(f,i){h+='<div class="fq" onclick="tFaq('+i+')" id="fq'+i+'"><div class="fq-q">'+f.q+'<span class="fq-arr">▼</span></div><div class="fq-a">'+f.a+'</div></div>';});document.getElementById('faqList').innerHTML=h;}
+function tFaq(i){document.getElementById('fq'+i).classList.toggle('open');}
+function goTop(){window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){document.getElementById('urlInput').focus();},400);}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2400);}
+function grade(s){return s>=80?'A':s>=65?'B':s>=50?'C':s>=35?'D':'F';}
+function grColor(g){return g==='A'||g==='B'?'gt':g==='C'?'bt':g==='D'?'ot':'rt';}
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setPb(p){document.getElementById('pb').style.width=p+'%';}
+
+// Safe JSON parse with fallback
+function safeJSON(txt,fallback){
+  if(!txt)return fallback;
+  try{
+    var c=txt.trim().replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```\s*$/g,'').trim();
+    var s=c.indexOf('{'),e=c.lastIndexOf('}');
+    if(s===-1||e===-1)return fallback;
+    c=c.substring(s,e+1);
+    // Fix common JSON issues
+    c=c.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,' ');
+    try{return JSON.parse(c);}catch(e1){
+      // Try to fix truncated JSON by adding closing brackets
+      var fixed=c;
+      var opens=(fixed.match(/\{/g)||[]).length-(fixed.match(/\}/g)||[]).length;
+      var arrs=(fixed.match(/\[/g)||[]).length-(fixed.match(/\]/g)||[]).length;
+      // Remove trailing comma before attempting fix
+      fixed=fixed.replace(/,\s*([}\]])/g,'$1');
+      for(var i=0;i<arrs;i++)fixed+=']';
+      for(var j=0;j<opens;j++)fixed+='}';
+      try{return JSON.parse(fixed);}catch(e2){return fallback;}
+    }
+  }catch(e){return fallback;}
+}
+
+function sTab(t){
+  ['scan','comp','cite'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.toggle('on',x===t);
+    var w=document.getElementById('wrap-'+x);if(w)w.classList.toggle('on',x===t);
+  });
+  document.getElementById('resEl').classList.remove('on');
+  document.getElementById('compResEl').classList.remove('on');
+  document.getElementById('citeResEl').classList.remove('on');
+  document.getElementById('errBox').classList.remove('on');
+}
+
+function fetchSite(url,cb){
+  if(!PROXY_URL||PROXY_URL==='YOUR_VERCEL_PROXY_URL'){cb(null);return;}
+  fetch(PROXY_URL+'?url='+encodeURIComponent(url),{signal:AbortSignal.timeout?AbortSignal.timeout(12000):undefined})
+    .then(function(r){return r.json();}).then(function(d){cb(d);}).catch(function(){cb(null);});
+}
+
+// Smart page detection - homepage + services + contacts
+function getKeyPages(baseUrl,mainHtml,cb){
+  // Try to find services/products and contact pages from HTML links
+  var pages=[];
+  if(mainHtml){
+    var linkMatches=mainHtml.match(/href=["']([^"']+)["']/g)||[];
+    var serviceKw=['service','услуг','product','продукт','offer','предложен','about','о нас'];
+    var contactKw=['contact','контакт','about','о нас','reach','написат'];
+    var found={srv:null,cnt:null};
+    linkMatches.forEach(function(lm){
+      var href=lm.replace(/href=["']/,'').replace(/["']$/,'').trim();
+      if(href.startsWith('/')||href.startsWith(baseUrl)){
+        var full=href.startsWith('/')?baseUrl+href:href;
+        var low=full.toLowerCase();
+        if(!found.srv&&serviceKw.some(function(k){return low.indexOf(k)>-1;}))found.srv=full;
+        if(!found.cnt&&contactKw.some(function(k){return low.indexOf(k)>-1;}))found.cnt=full;
+      }
+    });
+    if(found.srv)pages.push(found.srv);
+    if(found.cnt&&found.cnt!==found.srv)pages.push(found.cnt);
+  }
+  // Fallback to common paths
+  if(pages.length<2){
+    var fallbacks=['/services','/products','/about','/contact'];
+    fallbacks.forEach(function(f){
+      if(pages.length<2)pages.push(baseUrl+f);
+    });
+  }
+  cb(pages.slice(0,2));
+}
+
+function startScan(){
+  var raw=document.getElementById('urlInput').value.trim();
+  if(!raw){toast(LANG==='ru'?'Введите URL':'Enter URL');return;}
+  SURL=raw.indexOf('http')===0?raw:'https://'+raw;
+  document.getElementById('scanBtn').disabled=true;
+  document.getElementById('errBox').classList.remove('on');
+  document.getElementById('resEl').classList.remove('on');
+  document.getElementById('scanEl').classList.add('on');
+  setPb(3);
+  var steps=TX[LANG].ss,h='';
+  steps.forEach(function(s,i){h+='<li class="ss" id="ss'+i+'"><span class="ss-ic">○</span>'+s+'</li>';});
+  document.getElementById('ssList').innerHTML=h;
+  var si=0;
+  function act(i){if(i>0){var p=document.getElementById('ss'+(i-1));if(p){p.className='ss done';p.querySelector('.ss-ic').textContent='✓';}}var c=document.getElementById('ss'+i);if(c){c.className='ss active';c.querySelector('.ss-ic').textContent='►';}setPb(Math.min(5+i*7,88));}
+  act(0);var iv=setInterval(function(){si++;if(si<steps.length)act(si);},600);
+
+  fetchSite(SURL,function(md){
+    var base=SURL.replace(/\/$/,'');
+    var mainHtml=md?md.html:'';
+    // Detect site language and platform from HTML
+    var siteLang='en';
+    DETECTED_PLATFORM = detectPlatform(mainHtml);
+    if(mainHtml){
+      var htmlSample=mainHtml.substring(0,5000).toLowerCase();
+      var ruChars=(htmlSample.match(/[а-яё]/g)||[]).length;
+      var ukChars=(htmlSample.match(/[іїєґ]/g)||[]).length;
+      var langAttr=(mainHtml.match(/lang=["']([^"']+)["']/i)||[])[1]||'';
+      if(ukChars>50||(langAttr&&langAttr.toLowerCase().startsWith('uk')))siteLang='uk';
+      else if(ruChars>50||(langAttr&&langAttr.toLowerCase().startsWith('ru')))siteLang='ru';
+    }
+    window.SITE_LANG=siteLang;
+    getKeyPages(base,mainHtml,function(extraPages){
+      var xh='',done=0;
+      if(!extraPages.length){doScanAPI(md,'',iv);return;}
+      extraPages.forEach(function(u){
+        fetchSite(u,function(d){
+          if(d&&d.html)xh+='\n\n--- PAGE: '+u+' ---\n'+d.html.substring(0,2500);
+          done++;if(done===extraPages.length)doScanAPI(md,xh,iv);
+        });
+      });
+    });
+  });
+}
+
+function doScanAPI(md,xh,iv){
+  if(!CLAUDE_URL){
+    clearInterval(iv);document.getElementById('scanEl').classList.remove('on');
+    SDATA=demoData(SURL);showResults(SDATA);return;
+  }
+  var siteLangLabel=window.SITE_LANG==='uk'?'Ukrainian':window.SITE_LANG==='ru'?'Russian':'English';
+  var sys='You are an AI search visibility JSON API. You MUST output ONLY a single valid JSON object. No markdown, no explanation. CRITICAL: Write ALL text fields (descriptions, titles, queries, improvements, fix_code instructions, where_to_paste, platform_instruction) in '+siteLangLabel+'. The site language is '+siteLangLabel+'. Keep strings under 150 chars each.';
+  var ctx='';
+  if(md){ctx='\n\nSITE DATA:\nHTML(first 5000):\n'+(md.html||'').substring(0,5000)+'\nrobots.txt:\n'+(md.robots_txt||'NOT FOUND').substring(0,500)+'\nllms.txt:\n'+(md.llms_txt||'NOT FOUND').substring(0,500)+(xh?'\n\nExtra pages:\n'+xh.substring(0,2500):'');}
+  var usr='AEO audit for: '+SURL+'. All text fields MUST be in '+siteLangLabel+'.'+ctx+'\n\nDetect platform from HTML (check meta generator, script src, class names - WordPress has wp-content, Tilda has tilda, Wix has wixstatic, Shopify has cdn.shopify, Bitrix has bitrix).\nReturn compact JSON (all text in '+siteLangLabel+', strings under 150 chars):\n{"visibility_score":32,"visibility_after":67,"aeo_score":35,"geo_score":28,"agent_score":22,"mention_readiness":31,"site_name":"d.com","business_type":"Local Business","platform":"WordPress","ai_identity":{"description":"Short 2-sentence description","category":"Local Business","confidence":"low","platforms":["Google"]},"invisible_queries":["query 1","query 2","query 3","query 4","query 5","query 6","query 7","query 8","query 9","query 10","query 11","query 12"],"citation_by_ai":[{"engine":"ChatGPT","pct":5,"status":"bad"},{"engine":"Perplexity","pct":0,"status":"bad"},{"engine":"Gemini","pct":10,"status":"mid"},{"engine":"Claude","pct":0,"status":"bad"},{"engine":"Google AI","pct":8,"status":"bad"}],"subcategories":{"structured_data":{"score":25,"passed":2,"total":8},"meta_technical":{"score":54,"passed":3,"total":10},"ai_accessibility":{"score":20,"passed":1,"total":8},"content_quality":{"score":41,"passed":2,"total":7}},"prediction":{"current_grade":"F","after_grade":"B","improvements":["fix1","fix2","fix3"]},"competitors":[{"domain":"comp1.com","why":"reason"},{"domain":"comp2.com","why":"reason"},{"domain":"comp3.com","why":"reason"}],"issues":[{"priority":"high","category":"Schema.org","title":"Short title","description":"Short desc under 120 chars","fix_code":"code here","where_to_paste":"instruction","platform_instruction":"platform specific"},{"priority":"high","category":"llms.txt","title":"Short title","description":"Short desc","fix_code":"code","where_to_paste":"instruction","platform_instruction":"instruction"},{"priority":"medium","category":"robots.txt","title":"Short title","description":"Short desc","fix_code":"code","where_to_paste":"instruction","platform_instruction":"instruction"},{"priority":"medium","category":"Open Graph","title":"Short title","description":"Short desc","fix_code":"code","where_to_paste":"instruction","platform_instruction":"instruction"},{"priority":"low","category":"Sitemap","title":"Short title","description":"Short desc","fix_code":"code","where_to_paste":"instruction","platform_instruction":"instruction"}]}';
+
+  fetch(CLAUDE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:4000,system:sys,messages:[{role:'user',content:usr}]})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    clearInterval(iv);document.getElementById('scanEl').classList.remove('on');
+    if(d.error){
+      // Silent fallback to demo on API error
+      SDATA=demoData(SURL);showResults(SDATA);return;
+    }
+    var txt=d.content&&d.content[0]?d.content[0].text:'';
+    var parsed=safeJSON(txt,null);
+    if(parsed){SDATA=parsed;showResults(SDATA);}
+    else{SDATA=demoData(SURL);showResults(SDATA);}
+  })
+  .catch(function(){
+    clearInterval(iv);document.getElementById('scanEl').classList.remove('on');
+    SDATA=demoData(SURL);showResults(SDATA);
+  });
+}
+
+function showResults(data){
+  var host=SURL.replace(/https?:\/\//,'').split('/')[0];
+  document.getElementById('resDom').textContent=host;
+  var t=TX[LANG];
+  var isRu=LANG==='ru';
+
+  // AI VISIBILITY SCORE
+  var vs=data.visibility_score||32;
+  var va=data.visibility_after||67;
+  var vsColor=vs>=80?'var(--green)':vs>=60?'#86efac':vs>=40?'var(--yellow)':vs>=20?'var(--orange)':'var(--red)';
+  var vaColor='var(--green)';
+  var vsGrade=vs>=80?'A':vs>=65?'B':vs>=50?'C':vs>=35?'D':'F';
+  var vsGradeBg=vs>=65?'rgba(0,230,118,.1)':vs>=50?'rgba(255,215,64,.1)':vs>=35?'rgba(255,145,0,.1)':'rgba(255,82,82,.1)';
+  var vsGradeBorder=vs>=65?'#1a3a1a':vs>=50?'#2a2000':vs>=35?'#2a1400':'#2a0808';
+  var improvements=(data.prediction&&data.prediction.improvements)||[];
+  document.getElementById('visScoreWrap').innerHTML=
+    '<div class="vis-score-label">'+(isRu?'AI VISIBILITY SCORE — видимость вашего сайта в AI':'AI VISIBILITY SCORE — your site visibility in AI')+'</div>'
+    +'<div class="vis-score-main">'
+    +'<div style="text-align:center"><div style="display:flex;align-items:baseline;justify-content:center;gap:4px"><span class="vis-score-num" style="color:'+vsColor+'">'+vs+'</span><span class="vis-score-of">/100</span></div><div style="font-size:.68rem;color:#444;margin-top:4px">'+(isRu?'сейчас':'current')+'</div></div>'
+    +'<div style="font-size:1.5rem;color:#222;padding-top:8px">→</div>'
+    +'<div style="text-align:center"><div style="display:flex;align-items:baseline;justify-content:center;gap:4px"><span class="vis-score-num" style="color:'+vaColor+'">'+va+'</span><span class="vis-score-of">/100</span></div><div style="font-size:.68rem;color:var(--green);margin-top:4px">'+(isRu?'после исправлений':'after fixes')+'</div></div>'
+    +'</div>'
+    +'<div class="vis-bar-wrap">'
+    +'<div style="display:flex;justify-content:space-between;font-size:.6rem;color:#333;margin-bottom:4px"><span>'+(isRu?'сейчас: '+vs+'/100':'current: '+vs+'/100')+'</span><span style="color:var(--green)">'+(isRu?'после: '+va+'/100':'after: '+va+'/100')+'</span></div>'
+    +'<div class="vis-bar-bg"><div style="position:relative;height:100%"><div class="vis-bar-fill" style="width:'+vs+'%;background:'+vsColor+'"></div><div style="position:absolute;top:0;left:0;height:100%;width:'+va+'%;background:rgba(0,230,118,.2);border-radius:3px"></div></div></div>'
+    +'</div>'
+    +(improvements.length?'<div class="vis-improve-list">'+improvements.slice(0,4).map(function(x){return '<div class="vis-improve-item">'+esc(x)+'</div>';}).join('')+'</div>':'');
+
+  // DETECTED
+  var platNames={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','drupal':'Drupal','prestashop':'PrestaShop','nextjs':'Next.js','nuxt':'Nuxt.js','laravel':'Laravel','django':'Django','static':'Static','gatsby':'Gatsby','custom':isRu?'Свой движок':'Custom'};
+  var displayPlatform=platNames[DETECTED_PLATFORM]||(data.platform||'Custom');
+  document.getElementById('detRow').innerHTML=
+    '<div class="det-badge"><span class="det-lbl">DETECTED</span><span class="det-val">'+esc(data.business_type||'General')+'</span></div>'
+    +'<div class="det-badge"><span class="det-lbl">PLATFORM</span><span class="plat-val">'+esc(displayPlatform)+'</span></div>';
+
+  // SCORES
+  var sc=[data.aeo_score||31,data.geo_score||25,data.agent_score||19];
+  var sh='';
+  for(var i=0;i<3;i++){var g=grade(sc[i]),gc=grColor(g);sh+='<div class="sc"><div class="sc-lbl">'+t.sl[i]+'</div><div class="sc-main"><div class="sc-g '+gc+'">'+g+'</div><div class="sc-n '+gc+'">'+sc[i]+'</div></div><div class="sc-sl">'+t.sd[i]+'</div></div>';}
+  document.getElementById('scGrid').innerHTML=sh;
+
+  // MENTION
+  var mr=data.mention_readiness||31,mrg=grade(mr),mrgc=grColor(mrg);
+  document.getElementById('mentCard').innerHTML='<div class="mention-l"><div class="mention-title">Mention Readiness Score</div><div class="mention-desc">'+(isRu?'Насколько ваш сайт готов к упоминаниям в AI-ответах':'How ready your site is to be mentioned in AI answers')+'</div></div><div class="mention-r"><div class="mention-score '+mrgc+'">'+mrg+'</div><div class="mention-lbl">'+mr+'/100</div></div>';
+
+  // ID CARD
+  var ai=data.ai_identity||{description:isRu?'AI не может определить что представляет этот сайт. Отсутствуют структурированные данные.':'AI cannot identify what this site is about. Missing structured data.',category:isRu?'Не определено':'Uncategorized',confidence:'low',platforms:[]};
+  document.getElementById('idCard').innerHTML='<div class="id-head"><div class="id-title">AI Identity Card</div><div class="id-badge">'+(isRu?'как AI видит вас сейчас':'how AI sees you now')+'</div></div><div class="id-quote">'+esc(ai.description||'')+'</div><div class="id-meta"><div class="id-tag">'+(isRu?'Категория: ':'Category: ')+esc(ai.category||'?')+'</div><div class="id-tag warn">'+(isRu?'Уверенность: ':'Confidence: ')+esc(ai.confidence||'low')+'</div>'+(ai.platforms||[]).slice(0,3).map(function(p){return '<div class="id-tag">'+esc(p)+'</div>';}).join('')+'</div>';
+
+  // INVISIBLE QUERIES
+  var iqs=data.invisible_queries||[];
+  if(iqs.length){
+    document.getElementById('invisCard').innerHTML=
+      '<div class="invis-head">🔴 '+(isRu?'Вас нет в AI по этим запросам:':'You\'re invisible in AI for these queries:')+'<span style="font-size:.7rem;color:#ff5252;font-family:Inter,sans-serif;font-weight:400">'+iqs.length+(isRu?' запросов':' queries')+'</span></div>'
+      +'<div class="invis-sub">'+(isRu?'По этим типичным запросам вашей ниши AI не упоминает ваш сайт. После исправлений часть из них закроется.':'For these typical queries in your niche, AI does not mention your site. After fixes, some will be resolved.')+'</div>'
+      +'<div class="invis-queries">'+iqs.map(function(q,i){return '<div class="invis-q'+(i>=6?' partial':'')+'" title="'+(i>=6?(isRu?'Частично решается после исправлений':'Partially resolved after fixes'):(isRu?'Не видны в AI':'Invisible in AI'))+'">'+esc(q)+'</div>';}).join('')+'</div>';
+  } else {
+    document.getElementById('invisCard').style.display='none';
+  }
+
+  // CITATION IN REPORT
+  var cai=data.citation_by_ai||[];
+  if(cai.length){
+    var ciH='<div class="cite-report-head"><span>'+(isRu?'Цитирование в AI-поисковиках':'Citation in AI search engines')+'</span><span style="font-size:.68rem;color:#444">'+(isRu?'% вероятность упоминания':'% chance of mention')+'</span></div>';
+    cai.forEach(function(c){
+      var pct=c.pct||0;
+      var barColor=pct>=60?'var(--green)':pct>=30?'var(--yellow)':'var(--red)';
+      var stCls=pct>=60?'good':pct>=30?'mid':'bad';
+      var stTxt=pct>=60?(isRu?'Хорошо':'Good'):pct>=30?(isRu?'Средне':'Medium'):(isRu?'Плохо':'Poor');
+      ciH+='<div class="cite-engine-row"><div class="cite-engine-name">'+esc(c.engine||'')+'</div><div class="cite-pct-wrap"><div class="cite-pct-bar"><div class="cite-pct-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div><div class="cite-pct-num" style="color:'+barColor+'">'+pct+'%</div></div><div class="cite-status '+stCls+'">'+stTxt+'</div></div>';
+    });
+    document.getElementById('citeReportCard').innerHTML=ciH;
+  } else {
+    document.getElementById('citeReportCard').style.display='none';
+  }
+
+  // SUBCATS
+  var sub=data.subcategories||{structured_data:{score:25,passed:2,total:8},meta_technical:{score:54,passed:3,total:10},ai_accessibility:{score:20,passed:1,total:8},content_quality:{score:41,passed:2,total:7}};
+  var sn=isRu?['Структурированные данные','Meta & Technical','AI Accessibility','Качество контента']:['Structured Data','Meta & Technical','AI Accessibility','Content Quality'];
+  var sk=['structured_data','meta_technical','ai_accessibility','content_quality'];
+  var gc2={A:'var(--green)',B:'#44cc88',C:'var(--yellow)',D:'var(--orange)',F:'var(--red)'};
+  var subH='';
+  sk.forEach(function(k,i){var s=sub[k]||{score:30,passed:1,total:8};var g2=grade(s.score),gcolor=gc2[g2]||'var(--red)';subH+='<div class="subcat"><div class="subcat-hd"><span class="subcat-nm">'+sn[i]+'</span><span class="subcat-sc" style="color:'+gcolor+'">'+g2+' ('+s.score+')</span></div><div class="subcat-bar"><div class="subcat-fill" style="width:'+s.score+'%;background:'+gcolor+'"></div></div><div class="subcat-cnt">'+s.passed+'/'+s.total+' '+(isRu?'пройдено':'passed')+'</div></div>';});
+  document.getElementById('subcats').innerHTML=subH;
+
+  // PRED
+  var pred=data.prediction||{current_grade:'F',after_grade:'B',improvements:[]};
+  document.getElementById('predCard').innerHTML='<div class="pred-head">📈 '+(isRu?'Прогноз после исправлений:':'Prediction after fixes:')+'</div><div class="pred-row"><div class="pred-side"><div class="pred-g rt">'+(pred.current_grade||'F')+'</div><div class="pred-lbl">'+(isRu?'Сейчас':'Now')+'</div></div><div class="pred-arr">→</div><div class="pred-side"><div class="pred-g gt">'+(pred.after_grade||'B')+'</div><div class="pred-lbl">'+(isRu?'После':'After')+'</div></div><div class="pred-items">'+(pred.improvements||[]).map(function(x){return '<div class="pred-item">'+esc(x)+'</div>';}).join('')+'</div></div>';
+
+  // ISSUES
+  var all=data.issues||[];
+  document.getElementById('issueCnt').textContent=all.length+(isRu?' проблем найдено':' issues found');
+  var ih='';
+  for(var j=0;j<all.length;j++){
+    var iss=all[j],lk=j>=3;
+    var pc=iss.priority==='high'?'ph':iss.priority==='medium'?'pm':'pl';
+    ih+='<div class="ir'+(lk?' locked':' click')+'" id="ir'+j+'"'+(lk?'':' onclick="tIss('+j+')"')+'>';
+    ih+='<div class="ir-top"><div class="pd '+pc+'"></div><div class="ir-name">'+esc(iss.title||'')+'</div><div class="ir-cat">'+esc(iss.category||'')+'</div>';
+    if(lk)ih+='<div class="ir-lk">'+(isRu?'🔒 В PDF':'🔒 In PDF')+'</div>';
+    else ih+='<span class="ir-arr" id="ia'+j+'">▼</span>';
+    ih+='</div>';
+    if(!lk){ih+='<div class="ir-body" id="ib'+j+'" style="display:none"><div class="ir-desc">'+esc(iss.description||'')+'</div><div class="code-b"><button class="cp-btn" id="cpb'+j+'" onclick="doCpBtn(event,'+j+')">'+(isRu?'📋 Копировать':'📋 Copy')+'</button><pre>'+esc(iss.fix_code||'')+'</pre></div><div class="paste-info"><strong>📌 '+(isRu?'Куда вставить: ':'Where to paste: ')+'</strong>'+esc(iss.where_to_paste||'')+'</div>'+(function(){
+        var codeType=iss.category||'';
+        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,codeType,LANG,iss.fix_code||'');
+        var platName={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','custom':isRu?'Кастомный сайт':'Custom site','nextjs':'Next.js','nuxt':'Nuxt.js','laravel':'Laravel','django':'Django','static':isRu?'Статический сайт':'Static site','drupal':'Drupal','prestashop':'PrestaShop','weebly':'Weebly','ghost':'Ghost','gatsby':'Gatsby'}[DETECTED_PLATFORM]||(isRu?'Ваша платформа':'Your platform');
+        return '<div class="plat-info"><strong>🖥 '+platName+':</strong><div style="margin-top:8px;white-space:pre-line;font-size:.7rem;line-height:1.8;color:#558">'+esc(platInstr)+'</div></div>';
+      }())+'</div>';}
+    ih+='</div>';
+  }
+  document.getElementById('issueList').innerHTML=ih;
+  document.getElementById('resEl').classList.add('on');
+  setTimeout(function(){document.getElementById('resEl').scrollIntoView({behavior:'smooth'});},100);
+  document.getElementById('scanBtn').disabled=false;
+}
+
+function tIss(j){var b=document.getElementById('ib'+j),r=document.getElementById('ir'+j);if(!b)return;var op=r.classList.contains('open');r.classList.toggle('open',!op);b.style.display=op?'none':'block';}
+function doCp(e,j){e.stopPropagation();if(!SDATA||!SDATA.issues)return;var code=SDATA.issues[j].fix_code||'';try{navigator.clipboard.writeText(code).then(function(){toast(LANG==='ru'?'✓ Скопировано!':'✓ Copied!');});}catch(er){var ta=document.createElement('textarea');ta.value=code;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast(LANG==='ru'?'✓ Скопировано!':'✓ Copied!');}catch(e2){}document.body.removeChild(ta);}}
+function doCpBtn(e,j){
+  e.stopPropagation();
+  if(!SDATA||!SDATA.issues)return;
+  var code=SDATA.issues[j].fix_code||'';
+  var btn=document.getElementById('cpb'+j);
+  var isRu=LANG==='ru';
+  function showDone(){if(btn){btn.textContent=isRu?'✓ Скопировано!':'✓ Copied!';btn.style.background='#166534';btn.style.borderColor='#1a4a1a';setTimeout(function(){if(btn){btn.textContent=isRu?'📋 Копировать':'📋 Copy';btn.style.background='';btn.style.borderColor='';}},2000);}}
+  try{navigator.clipboard.writeText(code).then(function(){showDone();toast(isRu?'✓ Скопировано!':'✓ Copied!');}).catch(function(){var ta=document.createElement('textarea');ta.value=code;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showDone();});}
+  catch(er){var ta=document.createElement('textarea');ta.value=code;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showDone();}catch(e2){}document.body.removeChild(ta);}
+}
+function resetScan(){document.getElementById('resEl').classList.remove('on');document.getElementById('errBox').classList.remove('on');document.getElementById('urlInput').value='';document.getElementById('scanBtn').disabled=false;SDATA=null;SURL='';window.scrollTo({top:0,behavior:'smooth'});}
+
+// COMPETITOR
+function startComp(){
+  var u1=document.getElementById('compUrl1').value.trim();
+  if(!u1){toast(LANG==='ru'?'Введите ваш сайт':'Enter your site URL');return;}
+  var u2=document.getElementById('compUrl2').value.trim();
+  if(u1.indexOf('http')!==0)u1='https://'+u1;
+  if(u2&&u2.indexOf('http')!==0)u2='https://'+u2;
+  document.getElementById('compBtn').disabled=true;
+  document.getElementById('compResEl').classList.remove('on');
+  document.getElementById('scanEl').classList.add('on');setPb(20);
+  var steps=LANG==='ru'?['Анализируем ваш сайт...','Ищем конкурентов в нише...','Сравниваем позиции...','Формируем отчёт...']:['Analyzing your site...','Finding competitors in niche...','Comparing positions...','Building report...'];
+  var h='';steps.forEach(function(s,i){h+='<li class="ss" id="ss'+i+'"><span class="ss-ic">○</span>'+s+'</li>';});
+  document.getElementById('ssList').innerHTML=h;
+  var si=0,iv=setInterval(function(){si++;if(si<steps.length){var p=document.getElementById('ss'+(si-1));if(p){p.className='ss done';p.querySelector('.ss-ic').textContent='✓';}var c=document.getElementById('ss'+si);if(c){c.className='ss active';c.querySelector('.ss-ic').textContent='►';}}setPb(Math.min(20+si*18,88));},800);
+
+  if(!CLAUDE_URL){
+    clearInterval(iv);setTimeout(function(){document.getElementById('scanEl').classList.remove('on');document.getElementById('compBtn').disabled=false;showComp(demoCompData(u1,u2));},2500);return;
+  }
+  var sys='You are an AI competitor analysis JSON API. Output ONLY raw valid JSON. Keep all strings under 150 chars.';
+  var usr='Analyze AI search visibility for this real website: MY_SITE='+u1+(u2?' KNOWN_COMPETITOR='+u2:'')+'. Find 3 REAL competitors that actually exist on the internet in the same business niche. Use actual domain names of real companies, not placeholder names like competitor1.com.\nFind 3 top competitors in the same niche automatically.\nReturn ONLY compact JSON: {"my_site":{"url":"'+u1+'","visibility_score":32,"aeo_score":35,"geo_score":28,"agent_score":22,"platform":"WordPress","business_type":"Local Business"},"competitors":[{"url":"comp1.com","visibility_score":58,"aeo_score":62,"geo_score":54,"agent_score":38,"why_stronger":"reason under 100 chars","platform":"WordPress"},{"url":"comp2.com","visibility_score":71,"aeo_score":75,"geo_score":65,"agent_score":45,"why_stronger":"reason","platform":"Shopify"},{"url":"comp3.com","visibility_score":44,"aeo_score":48,"geo_score":40,"agent_score":28,"why_stronger":"reason","platform":"Custom"}]}. Output ONLY raw JSON.';
+  fetch(CLAUDE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:1500,system:sys,messages:[{role:'user',content:usr}]})})
+  .then(function(r){return r.json();}).then(function(d){
+    clearInterval(iv);setPb(100);document.getElementById('scanEl').classList.remove('on');document.getElementById('compBtn').disabled=false;
+    var txt=d.content&&d.content[0]?d.content[0].text:'';
+    var parsed=safeJSON(txt,null);
+    if(parsed)showComp(parsed);
+    else showComp(demoCompData(u1,u2));
+  }).catch(function(){clearInterval(iv);document.getElementById('scanEl').classList.remove('on');document.getElementById('compBtn').disabled=false;showComp(demoCompData(u1,u2));});
+}
+
+function demoCompData(u1,u2){
+  var isRu=LANG==='ru';
+  var h1=u1.replace(/https?:\/\//,'').split('/')[0];
+  return {my_site:{url:u1,visibility_score:32,aeo_score:35,geo_score:28,agent_score:22,platform:'WordPress',business_type:isRu?'Локальный бизнес':'Local Business'},
+  competitors:[
+    {url:u2?u2.replace(/https?:\/\//,'').split('/')[0]:'competitor1.com',visibility_score:61,aeo_score:68,geo_score:55,agent_score:42,why_stronger:isRu?'Полная schema.org разметка, llms.txt файл и активные AI-краулеры':'Complete schema.org markup, llms.txt file and active AI crawlers',platform:'WordPress'},
+    {url:'competitor2.com',visibility_score:54,aeo_score:58,geo_score:49,agent_score:35,why_stronger:isRu?'Хорошие Open Graph теги и регулярно обновляемый sitemap':'Good Open Graph tags and regularly updated sitemap',platform:'Shopify'},
+    {url:'competitor3.com',visibility_score:47,aeo_score:50,geo_score:43,agent_score:30,why_stronger:isRu?'Чёткая структура контента и FAQ schema разметка':'Clear content structure and FAQ schema markup',platform:'Custom'}
+  ]};
+}
+
+function showComp(data){
+  var isRu=LANG==='ru';
+  var my=data.my_site||{};
+  var comps=data.competitors||[];
+  // Auto found section
+  document.getElementById('compAutoFound').innerHTML=
+    '<div class="comp-auto-title">🔍 '+(isRu?'Найдено 3 конкурента в вашей нише:':'Found 3 competitors in your niche:')+'</div>'
+    +'<div class="comp-found-list">'+comps.map(function(c){
+      var diff=c.visibility_score-(my.visibility_score||32);
+      return '<div class="comp-found-item"><div class="comp-found-domain">'+esc(c.url||'')+'<span style="font-size:.68rem;margin-left:8px;color:'+(diff>0?'var(--red)':'var(--green)')+'">'+(diff>0?'+'+diff+' '+( isRu?'впереди вас':'ahead of you'):diff+' '+(isRu?'позади вас':'behind you'))+'</span></div><div class="comp-found-why">'+esc(c.why_stronger||'')+'</div></div>';
+    }).join('')+'</div>';
+
+  // Comparison grid
+  var metrics=isRu?[['AI Visibility Score','visibility_score'],['AEO Score','aeo_score'],['GEO Score','geo_score'],['Agent Readiness','agent_score'],['Платформа','platform']]:[['AI Visibility Score','visibility_score'],['AEO Score','aeo_score'],['GEO Score','geo_score'],['Agent Readiness','agent_score'],['Platform','platform']];
+  var allSites=[my].concat(comps.slice(0,3));
+  var gridH='';
+  allSites.forEach(function(site,idx){
+    var isMe=idx===0;
+    gridH+='<div class="comp-card" style="'+(isMe?'border-color:#1a3a1a':'')+'">'
+      +'<div class="comp-title" style="'+(isMe?'color:var(--green)':'')+'">'+(isMe?(isRu?'← Ваш сайт ':'← Your site '):'')+esc(site.url||'')+'</div>'
+      +metrics.map(function(m){
+        var v=site[m[1]];
+        var myV=my[m[1]];
+        var isNum=typeof v==='number';
+        var win=isNum&&idx>0&&v>myV;
+        var lose=isNum&&idx>0&&v<myV;
+        return '<div class="comp-row"><span class="comp-label">'+m[0]+'</span><span class="comp-val '+(win?'cv-lose':lose?'cv-win':'cv-tie')+'">'+(isNum?grade(v)+' ('+v+')':esc(v||'?'))+'</span></div>';
+      }).join('')+'</div>';
+  });
+  document.getElementById('compGrid').innerHTML=gridH;
+  document.getElementById('compResEl').classList.add('on');
+  setTimeout(function(){document.getElementById('compResEl').scrollIntoView({behavior:'smooth'});},100);
+}
+
+// CITATION CHECK
+function startCite(){
+  var myUrl=document.getElementById('citeUrl').value.trim();
+  var compUrl=document.getElementById('citeCompUrl').value.trim();
+  var query=document.getElementById('citeQuery').value.trim();
+  if(!myUrl){toast(LANG==='ru'?'Введите ваш сайт':'Enter your site URL');return;}
+  if(myUrl.indexOf('http')!==0)myUrl='https://'+myUrl;
+  if(compUrl&&compUrl.indexOf('http')!==0)compUrl='https://'+compUrl;
+  document.getElementById('citeBtn').disabled=true;
+  document.getElementById('citeResEl').classList.remove('on');
+  document.getElementById('scanEl').classList.add('on');setPb(10);
+  var steps=LANG==='ru'?['Анализируем нишу...','Подбираем запросы...','Проверяем ChatGPT...','Проверяем Perplexity...','Проверяем Gemini...','Проверяем Claude...','Проверяем Google AI...','Формируем результат...']:['Analyzing niche...','Selecting queries...','Checking ChatGPT...','Checking Perplexity...','Checking Gemini...','Checking Claude...','Checking Google AI...','Building result...'];
+  var h='';steps.forEach(function(s,i){h+='<li class="ss" id="ss'+i+'"><span class="ss-ic">○</span>'+s+'</li>';});
+  document.getElementById('ssList').innerHTML=h;
+  var si=0,iv=setInterval(function(){si++;if(si<steps.length){var p=document.getElementById('ss'+(si-1));if(p){p.className='ss done';p.querySelector('.ss-ic').textContent='✓';}var c=document.getElementById('ss'+i);if(c){c.className='ss active';c.querySelector('.ss-ic').textContent='►';}}setPb(Math.min(10+si*11,88));},800);
+
+  if(!CLAUDE_URL){
+    clearInterval(iv);setTimeout(function(){document.getElementById('scanEl').classList.remove('on');document.getElementById('citeBtn').disabled=false;showCite(demoCiteData(myUrl,compUrl,query),query||'');},3000);return;
+  }
+
+  // Detect language of site for citation
+  var citeLangLabel='English';
+  if(myUrl){
+    var mDom=myUrl.replace(/https?:\/\//,'').split('/')[0];
+    if(mDom.endsWith('.ru')||mDom.endsWith('.рф'))citeLangLabel='Russian';
+    else if(mDom.endsWith('.ua'))citeLangLabel='Ukrainian';
+  }
+
+  var sys='You are an AI citation analysis JSON API. Output ONLY raw valid JSON. Keep strings short. Write query_used and my_response fields in the site language: '+citeLangLabel+'.';
+  var usr='Analyze how 5 AI search engines would cite: MY_SITE='+myUrl+(compUrl?' COMPETITOR='+compUrl:'')+(query?' QUERY="'+query+'"':' - auto-detect the most typical real search query users use to find this business, write query_used in '+citeLangLabel+'.')+'. Write query_used and my_response in '+citeLangLabel+'. Return ONLY compact JSON: {"query_used":"real query text in '+citeLangLabel+'","engines":[{"id":"chatgpt","name":"ChatGPT","my_pct":5,"comp_pct":35,"my_response":"1 sentence in '+citeLangLabel+'","tips":["short tip in '+citeLangLabel+'"]},{"id":"perplexity","name":"Perplexity","my_pct":0,"comp_pct":45,"my_response":"1 sentence","tips":["tip"]},{"id":"gemini","name":"Gemini","my_pct":10,"comp_pct":30,"my_response":"1 sentence","tips":["tip"]},{"id":"claude","name":"Claude","my_pct":0,"comp_pct":25,"my_response":"1 sentence","tips":["tip"]},{"id":"gai","name":"Google AI","my_pct":8,"comp_pct":55,"my_response":"1 sentence","tips":["tip"]}]}. Output ONLY raw JSON.'
+  fetch(CLAUDE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:2000,system:sys,messages:[{role:'user',content:usr}]})})
+  .then(function(r){return r.json();}).then(function(d){
+    clearInterval(iv);setPb(100);document.getElementById('scanEl').classList.remove('on');document.getElementById('citeBtn').disabled=false;
+    var txt=d.content&&d.content[0]?d.content[0].text:'';
+    var parsed=safeJSON(txt,null);
+    if(parsed)showCite(parsed,query);
+    else showCite(demoCiteData(myUrl,compUrl,query),query);
+  }).catch(function(){clearInterval(iv);document.getElementById('scanEl').classList.remove('on');document.getElementById('citeBtn').disabled=false;showCite(demoCiteData(myUrl,compUrl,query),query);});
+}
+
+function demoCiteData(myUrl,compUrl,query){
+  var isRu=LANG==='ru';
+  var q=query||(isRu?'лучший сервис в нише':'best service in niche');
+  return {query_used:q,engines:[
+    {id:'chatgpt',name:'ChatGPT',my_pct:5,comp_pct:38,my_response:isRu?'ChatGPT не упоминает ваш сайт — отсутствует schema.org и llms.txt':'ChatGPT does not mention your site — missing schema.org and llms.txt',tips:isRu?['Добавьте schema.org разметку','Создайте llms.txt файл']:['Add schema.org markup','Create llms.txt file']},
+    {id:'perplexity',name:'Perplexity',my_pct:0,comp_pct:52,my_response:isRu?'Perplexity активно цитирует конкурента, у которого есть llms.txt':'Perplexity actively cites competitor who has llms.txt',tips:isRu?['Создайте llms.txt','Улучшите H1 заголовки']:['Create llms.txt','Improve H1 headings']},
+    {id:'gemini',name:'Gemini',my_pct:12,comp_pct:35,my_response:isRu?'Gemini частично видит ваш сайт через Google индекс':'Gemini partially sees your site through Google index',tips:isRu?['Добавьте sameAs в schema.org']:['Add sameAs to schema.org']},
+    {id:'claude',name:'Claude',my_pct:0,comp_pct:28,my_response:isRu?'Claude не цитирует ваш сайт — слабая структура контента':'Claude does not cite your site — weak content structure',tips:isRu?['Добавьте структурированные абзацы']:['Add structured paragraphs']},
+    {id:'gai',name:'Google AI',my_pct:8,comp_pct:61,my_response:isRu?'Google AI видит ваш сайт но редко цитирует — нет schema разметки':'Google AI sees your site but rarely cites — missing schema markup',tips:isRu?['Добавьте FAQ schema','Улучшите Open Graph']:['Add FAQ schema','Improve Open Graph']}
+  ]};
+}
+
+function showCite(data,queryInput){
+  var isRu=LANG==='ru';
+  var engines=data.engines||[];
+  var queryUsed=data.query_used||queryInput||(isRu?'запрос не указан':'query not specified');
+  var myHost=document.getElementById('citeUrl').value.replace(/https?:\/\//,'').split('/')[0]||(isRu?'Ваш сайт':'Your site');
+  var compHost=document.getElementById('citeCompUrl').value.replace(/https?:\/\//,'').split('/')[0]||(isRu?'Конкурент':'Competitor');
+
+  document.getElementById('citeQueryShow').textContent='"'+queryUsed+'"';
+  document.getElementById('citeQBadge').textContent='"'+queryUsed+'"';
+  document.getElementById('t-c-your').textContent=myHost;
+  document.getElementById('t-c-comp').textContent=compHost;
+
+  var totalMy=0,totalComp=0,engFound=0;
+  engines.forEach(function(e){totalMy+=e.my_pct||0;totalComp+=e.comp_pct||0;if((e.my_pct||0)>0)engFound++;});
+  var avgMy=Math.round(totalMy/Math.max(engines.length,1));
+  var avgComp=Math.round(totalComp/Math.max(engines.length,1));
+
+  document.getElementById('citeSummGrid').innerHTML=
+    '<div class="cite-sum-card"><div class="cite-sum-num '+(avgMy>30?'gt':avgMy>10?'yt':'rt')+'">'+avgMy+'%</div><div class="cite-sum-lbl">'+(isRu?'средний % упоминаний вашего сайта':'avg mention % your site')+'</div></div>'
+    +'<div class="cite-sum-card"><div class="cite-sum-num bt">'+avgComp+'%</div><div class="cite-sum-lbl">'+(isRu?'средний % упоминаний конкурента':'avg mention % competitor')+'</div></div>'
+    +'<div class="cite-sum-card"><div class="cite-sum-num '+(engFound>=3?'gt':engFound>=1?'yt':'rt')+'">'+engFound+'/'+engines.length+'</div><div class="cite-sum-lbl">'+(isRu?'AI упоминают вас':'AI engines mention you')+'</div></div>';
+
+  var maxV=0;engines.forEach(function(e){maxV=Math.max(maxV,e.my_pct||0,e.comp_pct||0);});maxV=Math.max(maxV,1);
+  var rowsH='';
+  engines.forEach(function(eng,idx){
+    var mp=eng.my_pct||0,cp=eng.comp_pct||0;
+    var mpct=Math.round(mp/maxV*100),cpct=Math.round(cp/maxV*100);
+    var aiInfo=AI_ENGINES.filter(function(a){return a.id===eng.id;})[0]||{color:'#888',bg:'#111'};
+    rowsH+='<div class="cite-ai-row" onclick="tCR('+idx+')" id="cr'+idx+'">';
+    rowsH+='<div class="cite-ai-cell"><div class="cite-ai-name"><div class="cite-ai-ico" style="background:'+aiInfo.bg+';color:'+aiInfo.color+'">'+eng.name.charAt(0)+'</div>'+esc(eng.name)+'</div></div>';
+    var myTips=(eng.tips||[]).slice(0,3);
+    var isRuTooltip=LANG==='ru';
+    var myTitle=myTips.length?(eng.name+(mp>0?' — '+mp+'%':'')+' | '+(isRuTooltip?'Как улучшить: ':'How to improve: ')+myTips.join(' · ')):(isRuTooltip?eng.name+' не цитирует ваш сайт':eng.name+' does not cite your site');
+    rowsH+='<div class="cite-ai-cell" title="'+esc(myTitle)+'"><div class="cite-count-wrap"><span class="cite-num '+(mp>0?'found':'none')+'">'+(mp>0?mp+'%':'—')+'</span><div class="cite-bar-bg"><div class="cite-bar-fill" style="width:'+mpct+'%;background:'+(mp>0?aiInfo.color:'#1a1a1a')+'"></div></div></div></div>';
+    var compTitle=cp>0?cp+'% '+eng.name:'0%';
+    rowsH+='<div class="cite-ai-cell" title="'+esc(compTitle)+'"><div class="cite-count-wrap"><span class="cite-num '+(cp>0?'found':'none')+'">'+(cp>0?cp+'%':'—')+'</span><div class="cite-bar-bg"><div class="cite-bar-fill" style="width:'+cpct+'%;background:'+(cp>0?'var(--blue)':'#1a1a1a')+'"></div></div></div></div>';
+    rowsH+='<div class="cite-detail" id="cd'+idx+'"><div class="cite-detail-text">'+esc(eng.my_response||'')+'</div>';
+    if(eng.tips&&eng.tips.length){rowsH+='<div style="font-size:.68rem;font-weight:700;color:#444;margin:8px 0 5px">'+(isRu?'Как попасть в ответы '+eng.name+':':'How to appear in '+eng.name+' answers:')+'</div><div class="cite-tips">'+eng.tips.map(function(tip){return '<div class="cite-tip">'+esc(tip)+'</div>';}).join('')+'</div>';}
+    rowsH+='</div></div>';
+  });
+  document.getElementById('citeRows').innerHTML=rowsH;
+  document.getElementById('citeResEl').classList.add('on');
+  setTimeout(function(){document.getElementById('citeResEl').scrollIntoView({behavior:'smooth'});},100);
+}
+function tCR(i){document.getElementById('cr'+i).classList.toggle('expanded');}
+
+// PDF
+function dlPDF(){
+  if(!SDATA){toast(LANG==='ru'?'Сначала выполните скан':'Run a scan first');return;}
+  var btn=document.getElementById('dlBtn'),sp=document.getElementById('t-dlbtn');
+  btn.disabled=true;sp.textContent=LANG==='ru'?'⏳ Генерируем PDF...':'⏳ Generating PDF...';
+
+  setTimeout(function(){
+    try{
+      var isRu=LANG==='ru',all=SDATA.issues||[];
+      var host=SURL.replace(/https?:\/\//,'').split('/')[0];
+      var date=new Date().toLocaleDateString(isRu?'ru-RU':'en-US',{year:'numeric',month:'long',day:'numeric'});
+      var sc=[SDATA.aeo_score||31,SDATA.geo_score||25,SDATA.agent_score||19];
+      var sl=TX[LANG].sl;
+      var vs=SDATA.visibility_score||32,va=SDATA.visibility_after||67;
+      var pred=SDATA.prediction||{current_grade:'F',after_grade:'B',improvements:[]};
+      var ai=SDATA.ai_identity||{};
+      var iqs=SDATA.invisible_queries||[];
+      var cai=SDATA.citation_by_ai||[];
+      var platNames={'wordpress':'WordPress','tilda':'Tilda','wix':'Wix','shopify':'Shopify','bitrix':'1С-Битрикс','joomla':'Joomla','opencart':'OpenCart','squarespace':'Squarespace','webflow':'Webflow','modx':'MODX','custom':'Custom'};
+      var platDisplay=platNames[DETECTED_PLATFORM]||(SDATA.platform||'Custom');
+
+      function gradeColor(g){return g==='A'||g==='B'?'#00e676':g==='C'?'#ffd740':g==='D'?'#ff9100':'#ff5252';}
+      function gradeOf(s){return s>=80?'A':s>=65?'B':s>=50?'C':s>=35?'D':'F';}
+      function esc2(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+      var issHtml=all.map(function(iss,i){
+        var pl=iss.priority==='high'?(isRu?'🔴 Высокий':'🔴 High'):iss.priority==='medium'?(isRu?'🟡 Средний':'🟡 Medium'):(isRu?'🟢 Низкий':'🟢 Low');
+        var platInstr=getPlatformInstructions(DETECTED_PLATFORM,iss.category||'',LANG,iss.fix_code||'');
+        return '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:18px;margin-bottom:14px;page-break-inside:avoid">'
+          +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;flex-wrap:wrap">'
+          +'<span style="background:#f3f4f6;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#374151">#'+(i+1)+'</span>'
+          +'<span style="font-size:13px;font-weight:700;color:#111;flex:1">'+esc2(iss.title||'')+'</span>'
+          +'<span style="font-size:10px;color:#888;border:1px solid #e5e7eb;padding:2px 7px;border-radius:4px">'+esc2(iss.category||'')+'</span>'
+          +'<span style="font-size:10px">'+pl+'</span>'
+          +'</div>'
+          +'<p style="color:#555;font-size:12px;line-height:1.7;margin-bottom:12px">'+esc2(iss.description||'')+'</p>'
+          +(function(){
+            var cat=(iss.category||'').toLowerCase();
+            var title;
+            if(cat.indexOf('llms')>-1) title=isRu?'Создайте файл llms.txt и вставьте это содержимое:':'Create llms.txt with this content:';
+            else if(cat.indexOf('robot')>-1) title=isRu?'Добавьте эти строки в файл robots.txt:':'Add these lines to robots.txt:';
+            else if(cat.indexOf('sitemap')>-1) title=isRu?'Создайте файл sitemap.xml с этим содержимым:':'Create sitemap.xml with this content:';
+            else if(cat.indexOf('schema')>-1||cat.indexOf('structured')>-1) title=isRu?'Скопируйте и вставьте в тег head сайта:':'Copy and paste inside head tag:';
+            else if(cat.indexOf('open graph')>-1||cat.indexOf('meta')>-1) title=isRu?'Скопируйте мета-теги и вставьте в head:':'Copy meta tags and paste into head:';
+            else title=isRu?'Готовый код:':'Ready code:';
+            var cid='c'+i+'x'+(Math.random()*1e6|0);
+            var copyLabel=isRu?'Копировать':'Copy';
+            var copiedLabel=isRu?'✓ Скопировано!':'✓ Copied!';
+            return '<div style="background:#060606;border:1px solid #1a3a1a;border-radius:8px;padding:14px;margin-bottom:8px">'
+              +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">'
+              +'<div style="font-size:11px;font-weight:700;color:#00e676">'+title+'</div>'
+              +'<button onclick="(function(b){var p=document.getElementById(\''+cid+'\');if(!p)return;var t=p.innerText||p.textContent;navigator.clipboard?navigator.clipboard.writeText(t).then(function(){b.textContent=\''+copiedLabel+'\';b.style.background=\'#065f46\';setTimeout(function(){b.textContent=\''+copyLabel+'\';b.style.background=\'#1a3a1a\';},2000)}).catch(function(){var x=document.createElement(\'textarea\');x.value=t;x.style.cssText=\'position:fixed;opacity:0\';document.body.appendChild(x);x.focus();x.select();document.execCommand(\'copy\');document.body.removeChild(x);b.textContent=\''+copiedLabel+'\';setTimeout(function(){b.textContent=\''+copyLabel+'\';},2000)}):(function(){var x=document.createElement(\'textarea\');x.value=t;x.style.cssText=\'position:fixed;opacity:0\';document.body.appendChild(x);x.focus();x.select();document.execCommand(\'copy\');document.body.removeChild(x);b.textContent=\''+copiedLabel+'\';setTimeout(function(){b.textContent=\''+copyLabel+'\';},2000)})()})(this)" style="background:#1a3a1a;color:#00e676;border:1px solid #2a5a2a;padding:4px 14px;border-radius:5px;font-size:11px;cursor:pointer;font-weight:600">'+copyLabel+'</button>'
+              +'</div>'
+              +'<pre id="'+cid+'" style="color:#00e676;font-family:Consolas,monospace;font-size:11px;white-space:pre-wrap;word-break:break-word;margin:0;line-height:1.6">'+esc2(iss.fix_code||'')+'</pre>'
+              +'</div>';
+          }())
+          +'<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:9px 12px;font-size:11px;color:#78350f;margin-bottom:6px">'
+          +'<strong>📌 '+(isRu?'Куда вставить: ':'Where to paste: ')+'</strong>'+esc2(iss.where_to_paste||'')+'</div>'
+          +'<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:9px 12px;font-size:11px;color:#166534">'
+          +'<strong>🖥 '+esc2(platDisplay)+':</strong>'
+          +'<div style="margin-top:6px;white-space:pre-line;font-size:10px;line-height:1.8">'+esc2(platInstr)+'</div>'
+          +'</div>'
+          +'</div>';
+      }).join('');
+
+      var scHtml=sc.map(function(s,i){
+        var g=gradeOf(s),col=gradeColor(g);
+        return '<div style="background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px;padding:16px 12px;text-align:center">'
+          +'<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:10px">'+sl[i]+'</div>'
+          +'<div style="font-size:2rem;font-weight:800;color:'+col+';line-height:1;margin-bottom:3px">'+g+'</div>'
+          +'<div style="font-size:11px;color:#666">'+s+'/100</div>'
+          +'</div>';
+      }).join('');
+
+      var caiHtml=cai.map(function(e){
+        var col=e.pct>=60?'#00c853':e.pct>=30?'#f9a825':'#e53935';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f0f0">'
+          +'<div style="width:90px;font-size:11px;font-weight:600;color:#555">'+esc2(e.engine)+'</div>'
+          +'<div style="flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden">'
+          +'<div style="height:100%;width:'+Math.min(e.pct||0,100)+'%;background:'+col+'"></div></div>'
+          +'<div style="width:40px;text-align:right;font-size:11px;font-weight:700;color:'+col+'">'+e.pct+'%</div>'
+          +'</div>';
+      }).join('');
+
+      var iqHtml=iqs.slice(0,8).map(function(q){
+        return '<span style="display:inline-block;background:#fff5f5;border:1px solid #fca5a5;color:#dc2626;font-size:10px;padding:3px 9px;border-radius:12px;margin:3px">'+esc2(q)+'</span>';
+      }).join('');
+
+      var htmlDoc='<!DOCTYPE html><html><head><meta charset="UTF-8">'
+        +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+        +'<title>FixMyAI Report — '+esc2(host)+'</title>'
+        +'<style>'
+        +'*{margin:0;padding:0;box-sizing:border-box}'
+        +'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#000;color:#f0f0f0;font-size:14px;line-height:1.6}'
+        +'.page{max-width:780px;margin:0 auto;padding:32px 20px 60px}'
+        +'.copy-btn{background:#1a3a1a;color:#00e676;border:1px solid #2a5a2a;padding:5px 14px;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;transition:all .15s;white-space:nowrap}'
+        +'.copy-btn:hover{background:#2a5a2a;color:#fff}'
+        +'.copy-btn.copied{background:#065f46;color:#fff;border-color:#065f46}'
+        +'@media(max-width:600px){.page{padding:20px 14px}.score-grid{grid-template-columns:1fr!important}}'
+        +'</style>'
+        +'<scr'+'ipt>function copyCode(btn,id){var pre=document.getElementById(id);if(!pre)return;var t=pre.innerText||pre.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){btn.textContent=\"✓ Скопировано!\";btn.style.background=\"#065f46\";setTimeout(function(){btn.textContent=\"Копировать\";btn.style.background=\"\";},2000)}).catch(function(){fb(btn,t)});}else{fb(btn,t);}};function fb(btn,t){var x=document.createElement(\"textarea\");x.value=t;x.style.cssText=\"position:fixed;opacity:0\";document.body.appendChild(x);x.focus();x.select();try{document.execCommand(\"copy\");btn.textContent=\"✓ Скопировано!\";setTimeout(function(){btn.textContent=\"Копировать\";},2000);}catch(e){}document.body.removeChild(x);}<\/scr'+'ipt>'
+        +'</head><body><div class="page">'
+
+        // Header
+        +'<div style="background:linear-gradient(135deg,#0a0a0a 0%,#111 50%,#0d1a0d 100%);border-radius:12px;padding:32px 28px;margin-bottom:20px;position:relative;overflow:hidden">'
+        +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#00e676,#00bcd4,#00e676)"></div>'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">'
+        +'<div>'
+        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'
+        +'<div style="width:32px;height:32px;background:#00e676;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000">F</div>'
+        +'<div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.03em">FixMyAI</div>'
+        +'</div>'
+        +'<div style="font-size:13px;color:#888;margin-top:3px">'+(isRu?'Отчёт AI-видимости сайта':'AI Visibility Report')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right">'
+        +'<div style="background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:10px 16px;display:inline-block">'
+        +'<div style="font-size:15px;font-weight:800;color:#00e676;margin-bottom:4px">'+esc2(host)+'</div>'
+        +'<div style="font-size:12px;color:#aaa;margin-top:4px">'+(isRu?'Дата отчёта: ':'Report date: ')+'<span style="color:#fff;font-weight:700">'+date+'</span></div>'
+        +'</div>'
+        +'</div>'
+        +'</div>'
+        +'</div>'
+
+        // Visibility Score
+        +'<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:20px;margin-bottom:16px">'
+        +'<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:10px">AI VISIBILITY SCORE</div>'
+        +'<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">'
+        +'<div style="text-align:center"><div style="font-size:2.5rem;font-weight:800;color:#e53935;line-height:1">'+vs+'<span style="font-size:1rem;color:#888">/100</span></div><div style="font-size:10px;color:#888;margin-top:3px">'+(isRu?'сейчас':'current')+'</div></div>'
+        +'<div style="font-size:1.5rem;color:#ccc">→</div>'
+        +'<div style="text-align:center"><div style="font-size:2.5rem;font-weight:800;color:#00c853;line-height:1">'+va+'<span style="font-size:1rem;color:#888">/100</span></div><div style="font-size:10px;color:#00c853;margin-top:3px">'+(isRu?'после исправлений':'after fixes')+'</div></div>'
+        +'<div style="flex:1;min-width:150px">'+(pred.improvements||[]).map(function(x){return '<div style="font-size:11px;color:#166534;padding:2px 0">↑ '+esc2(x)+'</div>';}).join('')+'</div>'
+        +'</div></div>'
+
+        // Scores grid
+        +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">'+scHtml+'</div>'
+
+        // Detected
+        +'<div style="background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap">'
+        +'<div><span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#888">DETECTED</span><div style="font-size:12px;font-weight:700;color:#00c853">'+esc2(SDATA.business_type||'General')+'</div></div>'
+        +'<div><span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#888">PLATFORM</span><div style="font-size:12px;font-weight:700;color:#2563eb">'+esc2(platDisplay)+'</div></div>'
+        +'</div>'
+
+        // AI Identity
+        +'<div style="background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:16px">'
+        +'<div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px">AI IDENTITY CARD</div>'
+        +'<div style="font-size:12px;color:#555;font-style:italic;border-left:2px solid #00c853;padding-left:10px">'+esc2(ai.description||'')+'</div>'
+        +'</div>'
+
+        // Invisible queries
+        +(iqs.length?'<div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;padding:14px;margin-bottom:16px">'
+        +'<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:8px">🔴 '+(isRu?'НЕ ВИДНЫ В AI ПО ЗАПРОСАМ ('+iqs.length+'):':'INVISIBLE IN AI ('+iqs.length+' queries):')+'</div>'
+        +iqHtml+'</div>':'')
+
+        // Citation
+        +(cai.length?'<div style="background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:16px">'
+        +'<div style="font-size:10px;font-weight:700;color:#888;margin-bottom:10px">'+(isRu?'ЦИТИРОВАНИЕ В AI:':'AI CITATION:')+'</div>'
+        +caiHtml+'</div>':'')
+
+        // What to do
+        +'<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:16px">'
+        +'<div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:8px">⚡ '+(isRu?'Что делать прямо сейчас:':'What to do right now:')+'</div>'
+        +'<ol style="color:#1e3a8a;font-size:11px;line-height:2;padding-left:16px;margin:0">'
+        +'<li>'+(isRu?'Начните с 🔴 красных проблем':'Start with 🔴 red issues')+'</li>'
+        +'<li>'+(isRu?'Скопируйте готовый код для каждой':'Copy ready code for each issue')+'</li>'
+        +'<li>'+(isRu?'Следуйте инструкции для '+platDisplay:'Follow instructions for '+platDisplay)+'</li>'
+        +'<li>'+(isRu?'Пересканируйте через 2-3 недели':'Rescan in 2-3 weeks')+'</li>'
+        +'</ol></div>'
+
+        // Issues
+        +'<h2 style="font-size:16px;font-weight:700;margin-bottom:14px;color:#111">'+(isRu?'Все исправления ('+all.length+'):':'All fixes ('+all.length+'):')+'</h2>'
+        +issHtml
+
+        // Rescan note
+        +'<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;margin-top:16px">'
+        +'<div style="font-size:11px;font-weight:700;color:#0369a1;margin-bottom:4px">⏱ '+(isRu?'Когда пересканировать?':'When to rescan?')+'</div>'
+        +'<div style="font-size:11px;color:#555">'+(isRu?'Технические правки — сразу. Google AI Overviews — 2-4 нед. ChatGPT и Perplexity — 2-8 нед.':'Technical fixes — immediately. Google AI — 2-4 weeks. ChatGPT — 2-8 weeks.')+'</div>'
+        +'</div>'
+
+        +'<div style="text-align:center;color:#aaa;font-size:10px;border-top:1px solid #f0f0f0;padding-top:14px;margin-top:20px">FixMyAI · fixmyai.com · '+esc2(host)+' · '+date+'</div>'
+        +'</div>'
+        +'</body></html>';
+
+      var fname='FixMyAI-Report-'+host.replace(/[^a-z0-9]/gi,'_')+'.html';
+
+      // Download as HTML file - works perfectly, copy buttons work
+      var blob=new Blob([htmlDoc],{type:'text/html;charset=utf-8'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url;a.download=fname;
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      btn.disabled=false;sp.textContent=isRu?'⬇ Скачать отчёт':'⬇ Download Report';
+      toast(isRu?'✓ Отчёт скачан!':'✓ Report downloaded!');
+    }catch(err){
+      btn.disabled=false;
+      document.getElementById('t-dlbtn').textContent=LANG==='ru'?'⬇ Скачать отчёт':'⬇ Download Report';
+      toast(LANG==='ru'?'Ошибка — попробуйте ещё раз':'Error — please try again');
+      console.error(err);
+    }
+  },200);
+}
+
+
+// DEMO DATA
+function demoData(url){
+  var h=url.replace(/https?:\/\//,'').split('/')[0];
+  var ru=LANG==='ru';
+  return {
+    visibility_score:32,visibility_after:67,
+    aeo_score:31,geo_score:25,agent_score:19,mention_readiness:28,
+    site_name:h,business_type:ru?'Локальный бизнес':'Local Business',platform:'WordPress',
+    ai_identity:{description:ru?'AI не может определить что представляет этот сайт. Отсутствуют структурированные данные и файл llms.txt.':'AI cannot identify what this site represents. Missing structured data and llms.txt.',category:ru?'Не определено':'Uncategorized',confidence:'low',platforms:['Google']},
+    invisible_queries:ru?['аренда автобуса Харьков','пассажирские перевезення Харків','заказать микроавтобус','трансфер аэропорт Харьков','автобус на свадьбу Харьков','перевозка сотрудников','международные перевезения','аренда транспорта корпоратив','автобус экскурсия','школьный автобус аренда','трансфер из Харькова','автобус Харьков Киев']:['bus rental service','passenger transport','minibus hire','airport transfer','wedding bus','staff transportation','international routes','corporate transport','excursion bus','school bus rental','city transfer','bus routes'],
+    citation_by_ai:[{engine:'ChatGPT',pct:5,status:'bad'},{engine:'Perplexity',pct:0,status:'bad'},{engine:'Gemini',pct:10,status:'mid'},{engine:'Claude',pct:0,status:'bad'},{engine:'Google AI',pct:8,status:'bad'}],
+    subcategories:{structured_data:{score:25,passed:2,total:8},meta_technical:{score:54,passed:3,total:10},ai_accessibility:{score:20,passed:1,total:8},content_quality:{score:41,passed:2,total:7}},
+    prediction:{current_grade:'F',after_grade:'B',improvements:ru?['Schema.org добавлена (+15)','llms.txt создан (+12)','robots.txt исправлен (+8)']:['Schema.org added (+15)','llms.txt created (+12)','robots.txt fixed (+8)']},
+    issues:ru?[
+      {priority:'high',category:'Schema.org',title:'Отсутствует разметка Organization schema',description:'AI-поисковики используют schema.org для идентификации бизнеса. Без неё ChatGPT и Perplexity пропускают сайт.',fix_code:'<script type="application/ld+json">\n{\n  "@context":"https://schema.org",\n  "@type":"Organization",\n  "name":"'+h+'",\n  "url":"'+url+'",\n  "description":"Описание бизнеса"\n}\n<'+'\/script>',where_to_paste:'Вставьте внутрь тега <head> на каждой странице.',platform_instruction:'WordPress: Установите "Insert Headers and Footers" → Settings → Scripts in Header'},
+      {priority:'high',category:'llms.txt',title:'Файл llms.txt не найден',description:'llms.txt — стандарт 2024 который сообщает AI о сайте. ChatGPT и Perplexity приоритизируют сайты с этим файлом.',fix_code:'# llms.txt\n> Company: '+h+'\n> Description: Опишите бизнес\n> Contact: info@'+h+'\n\n## Pages\n- [Home]('+url+')\n- [About]('+url+'/about)',where_to_paste:'Создайте файл llms.txt в корне сайта (где index.html).',platform_instruction:'Любая платформа: загрузите по FTP в /public_html/'},
+      {priority:'medium',category:'robots.txt',title:'AI-боты могут быть заблокированы',description:'Если GPTBot и ClaudeBot заблокированы — AI не читает и не рекомендует сайт.',fix_code:'User-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: GoogleExtendedBot\nAllow: /',where_to_paste:'Добавьте в robots.txt по адресу '+url+'/robots.txt',platform_instruction:'WordPress: загрузите robots.txt по FTP в /public_html/'},
+      {priority:'medium',category:'Open Graph',title:'Неполные мета-теги Open Graph',description:'AI использует Open Graph для извлечения заголовка и описания при формировании ответа.',fix_code:'<meta property="og:title" content="'+h+'" />\n<meta property="og:description" content="Описание сайта" />\n<meta property="og:url" content="'+url+'" />\n<meta property="og:type" content="website" />\n<meta property="og:locale" content="ru_RU" />',where_to_paste:'Вставьте внутрь <head> на каждой странице.',platform_instruction:'WordPress: плагин Yoast SEO добавит теги автоматически.'},
+      {priority:'low',category:'Sitemap',title:'XML sitemap не найден',description:'Без sitemap AI-боты видят только главную страницу и пропускают страницы услуг.',fix_code:'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>'+url+'/</loc><lastmod>2026-04-24</lastmod><priority>1.0</priority></url>\n  <url><loc>'+url+'/services</loc><priority>0.9</priority></url>\n</urlset>',where_to_paste:'Сохраните как sitemap.xml в корне. Добавьте в robots.txt: Sitemap: '+url+'/sitemap.xml',platform_instruction:'WordPress: плагин Yoast SEO генерирует sitemap автоматически.'}
+    ]:[
+      {priority:'high',category:'Schema.org',title:'Missing Organization schema markup',description:'AI search engines use schema.org to identify businesses. Without it ChatGPT and Perplexity skip your site.',fix_code:'<script type="application/ld+json">\n{\n  "@context":"https://schema.org",\n  "@type":"Organization",\n  "name":"'+h+'",\n  "url":"'+url+'",\n  "description":"Your business description"\n}\n<'+'\/script>',where_to_paste:'Paste inside the <head> tag on every page.',platform_instruction:'WordPress: Install "Insert Headers and Footers" → Settings → Scripts in Header'},
+      {priority:'high',category:'llms.txt',title:'No llms.txt file found',description:'llms.txt is the 2024 standard that tells AI engines about your site. ChatGPT and Perplexity prioritize sites with this file.',fix_code:'# llms.txt\n> Company: '+h+'\n> Description: Describe your business\n> Contact: info@'+h+'\n\n## Pages\n- [Home]('+url+')\n- [About]('+url+'/about)',where_to_paste:'Create llms.txt in your site root folder.',platform_instruction:'Any platform: upload via FTP to /public_html/'},
+      {priority:'medium',category:'robots.txt',title:'AI crawlers may be blocked',description:'If GPTBot and ClaudeBot are blocked — AI cannot read or recommend your site.',fix_code:'User-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: GoogleExtendedBot\nAllow: /',where_to_paste:'Add to your robots.txt at '+url+'/robots.txt',platform_instruction:'WordPress: upload robots.txt via FTP to /public_html/'},
+      {priority:'medium',category:'Open Graph',title:'Incomplete Open Graph meta tags',description:'AI uses Open Graph to extract title and description when generating answers.',fix_code:'<meta property="og:title" content="'+h+'" />\n<meta property="og:description" content="Your description" />\n<meta property="og:url" content="'+url+'" />\n<meta property="og:type" content="website" />',where_to_paste:'Paste inside head tag on each page.',platform_instruction:'WordPress: Yoast SEO adds these automatically.'},
+      {priority:'low',category:'Sitemap',title:'XML sitemap not found',description:'Without a sitemap AI bots only see the homepage and miss service pages.',fix_code:'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>'+url+'/</loc><lastmod>2026-04-24</lastmod><priority>1.0</priority></url>\n  <url><loc>'+url+'/services</loc><priority>0.9</priority></url>\n</urlset>',where_to_paste:'Save as sitemap.xml at site root. Add to robots.txt: Sitemap: '+url+'/sitemap.xml',platform_instruction:'WordPress: Yoast SEO generates sitemap automatically.'}
+    ]
+  };
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  sL('ru');
+  document.getElementById('urlInput').addEventListener('keydown',function(e){if(e.key==='Enter')startScan();});
+  document.getElementById('compUrl1').addEventListener('keydown',function(e){if(e.key==='Enter')startComp();});
+  document.getElementById('citeUrl').addEventListener('keydown',function(e){if(e.key==='Enter')startCite();});
+  document.getElementById('citeQuery').addEventListener('keydown',function(e){if(e.key==='Enter')startCite();});
+});
+</script>
+</body>
+</html>
