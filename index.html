@@ -2,6 +2,14 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics - replace G-XXXXXXXXXX with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>FixMyAI — Сканер AI-видимости сайта</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -25,12 +33,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px
 .lb{background:none;border:1px solid #222;color:#444;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:.68rem;font-weight:700;font-family:'Inter',sans-serif;transition:all .15s}
 .lb.on{border-color:#333;color:#fff;background:#1a1a1a}
 .hero{text-align:center;padding:64px 20px 0;max-width:820px;margin:0 auto}
-.badge{display:inline-block;border:1px solid #1a3a1a;background:rgba(0,230,118,.05);color:var(--green);padding:5px 14px;border-radius:100px;font-size:.7rem;font-weight:500;margin-bottom:18px;max-width:90%;word-break:break-word}
-.hero-desc{font-size:.85rem;color:#555;max-width:480px;margin:0 auto 28px;line-height:1.75}
+.badge{display:inline-block;border:1px solid #1a3a1a;background:rgba(0,230,118,.08);color:var(--green);padding:8px 20px;border-radius:100px;font-size:.82rem;font-weight:600;margin-bottom:20px;max-width:90%;word-break:break-word}
+.hero-desc{font-size:.9rem;color:#aaa;max-width:480px;margin:0 auto 28px;line-height:1.75}
 .eyebrow{font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
-h1{font-family:'Sora',sans-serif;font-size:clamp(1.9rem,6vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.06;margin-bottom:20px}
+h1{font-family:'Sora',sans-serif;font-size:clamp(2.4rem,7vw,4.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.04;margin-bottom:20px}
 h1 .gr{color:var(--green)}
-.hero-sub{font-size:.88rem;color:#555;max-width:460px;margin:0 auto 40px;line-height:1.8}
+.hero-sub{font-size:1rem;color:#aaa;max-width:500px;margin:0 auto 40px;line-height:1.8}
 .tabs-wrap{max-width:640px;margin:0 auto 24px;padding:0 20px}
 .tabs{display:flex;background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:4px;gap:3px}
 .tab{flex:1;padding:9px 6px;border:none;background:none;color:#555;font-size:.72rem;font-weight:600;font-family:'Inter',sans-serif;border-radius:7px;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
@@ -38,11 +46,11 @@ h1 .gr{color:var(--green)}
 .inp-wrap{max-width:580px;margin:0 auto;padding:0 20px;display:none}
 .inp-wrap.on{display:block}
 .irow{display:flex;background:var(--card);border:1px solid var(--b2);border-radius:8px;overflow:hidden;margin-bottom:8px}
-.irow input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:.86rem;font-family:'Inter',sans-serif;padding:12px 16px;min-width:0}
+.irow input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:.94rem;font-family:'Inter',sans-serif;padding:14px 18px;min-width:0}
 .irow input::placeholder{color:#2a2a2a}
-.ibtn{background:var(--green);color:#000;border:none;padding:12px 20px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;flex-shrink:0}
+.ibtn{background:var(--green);color:#000;border:none;padding:14px 26px;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;flex-shrink:0}
 .ibtn:disabled{opacity:.4;cursor:wait}
-.inp-note{text-align:center;color:#2a2a2a;font-size:.68rem;margin-top:7px}
+.inp-note{text-align:center;color:#888;font-size:.72rem;margin-top:7px}
 .inp-label{font-size:.62rem;color:#444;padding:0 4px 5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .inp-opt{font-size:.6rem;color:#2a2a2a;margin-left:6px;font-weight:400}
 .err{background:#100505;border:1px solid #2a0808;border-radius:8px;padding:12px 18px;color:#ff6655;font-size:.78rem;display:none;max-width:580px;margin:10px auto 0}
@@ -51,6 +59,7 @@ h1 .gr{color:var(--green)}
 .scanning.on{display:block}
 .ring{width:44px;height:44px;border:2px solid var(--b1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 .ss-list{list-style:none;text-align:left;display:inline-block;margin-top:4px}
 .ss{font-size:.74rem;color:#2a2a2a;padding:3px 0;display:flex;align-items:center;gap:8px}
 .ss.active{color:#fff}.ss.done{color:#444}
@@ -246,15 +255,15 @@ h1 .gr{color:var(--green)}
 /* LANDING */
 .sec{max-width:900px;margin:72px auto 0;padding:0 20px}
 .sec-h{font-family:'Sora',sans-serif;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800;letter-spacing:-.03em;text-align:center;margin-bottom:9px}
-.sec-s{font-size:.8rem;color:#555;text-align:center;margin-bottom:32px}
+.sec-s{font-size:.85rem;color:#aaa;text-align:center;margin-bottom:32px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:22px 18px}
 .card-n{font-family:'Sora',sans-serif;font-size:1.9rem;font-weight:800;letter-spacing:-.04em;margin-bottom:5px}
 .card-l{font-size:.76rem;font-weight:600;color:#888;margin-bottom:3px}
-.card-d{font-size:.68rem;color:#444}
+.card-d{font-size:.68rem;color:#888}
 .card-sn{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:800;color:#151515;margin-bottom:12px}
 .card h4{font-family:'Sora',sans-serif;font-size:.86rem;font-weight:700;margin-bottom:6px}
-.card p{font-size:.74rem;color:#555;line-height:1.7}
+.card p{font-size:.76rem;color:#888;line-height:1.7}
 .ba-box{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:28px;text-align:center}
 .ba-box h3{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:5px}
 .ba-sub{font-size:.78rem;color:#555;margin-bottom:24px}
@@ -315,19 +324,19 @@ footer p{color:#222;font-size:.68rem}
 </head>
 <body>
 <nav>
-  <a class="logo" href="#"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div><span class="logo-text" id="t-logo">FixMyAI</span></a>
+  <a class="logo" href="#"><div class="logo-bars"><div class="logo-bar" style="background:#ff5252;height:8px"></div><div class="logo-bar" style="background:#ff9100;height:11px"></div><div class="logo-bar" style="background:#ffd740;height:15px"></div><div class="logo-bar" style="background:#00e676;height:20px"></div></div><span class="logo-text" id="t-logo">FixMyAI</span></a>
   <div class="nav-r">
     <a href="#how" class="nav-a" id="nl-how">Как работает</a>
     <a href="#faq" class="nav-a" id="nl-faq">FAQ</a>
     <button class="nav-btn" onclick="goTop()" id="nl-scan">Бесплатный скан</button>
-    <div class="lw"><button class="lb on" onclick="sL('ru')" id="lb-ru">RU</button><button class="lb" onclick="sL('en')" id="lb-en">EN</button><button class="lb" onclick="sL('de')" id="lb-de">DE</button></div>
+    <div class="lw"><button class="lb" onclick="sL('en')" id="lb-en">EN</button><button class="lb" onclick="sL('de')" id="lb-de">DE</button><button class="lb on" onclick="sL('ru')" id="lb-ru">RU</button></div>
   </div>
 </nav>
 
 <section class="hero" id="top">
   <div class="badge" id="t-badge">AI-поиск заменяет обычный — готов ли ваш сайт?</div>
   <p class="hero-desc" id="t-desc">FixMyAI — бесплатный инструмент аудита для оптимизации под ChatGPT, Perplexity и Google AI Overviews.</p>
-  <div class="eyebrow" id="t-ey">FIX MY AI</div>
+  <div class="eyebrow" id="t-ey">FIXMYAI</div>
   <h1><span id="t-h1">Ваш сайт невидим</span> <span class="gr" id="t-h2">для AI.</span></h1>
   <p class="hero-sub" id="t-sub">Perplexity, ChatGPT и Google AI Overviews отвечают на вопросы вместо показа ссылок. Если ваш сайт не оптимизирован — вас не существует.</p>
 </section>
@@ -344,6 +353,12 @@ footer p{color:#222;font-size:.68rem}
 <div class="inp-wrap on" id="wrap-scan">
   <div class="irow"><input type="url" id="urlInput" placeholder="https://yoursite.com" autocomplete="off" inputmode="url"/><button class="ibtn" id="scanBtn" onclick="startScan()"><span id="t-scanbtn">Сканировать бесплатно</span></button></div>
   <p class="inp-note" id="t-note">Без регистрации · Реальный AI-анализ · ~60 секунд</p>
+</div>
+<div style="text-align:center;margin-top:20px;display:none" id="scrollHint">
+  <div style="color:#2a2a2a;font-size:.7rem;margin-bottom:6px" id="scrollHintText">Результаты ниже</div>
+  <div style="animation:bounce 1.5s infinite;display:inline-block;color:#00e676;font-size:1.4rem">↓</div>
+</div>
+<div style="display:none" id="scrollHintPlaceholder">
 </div>
 
 <!-- COMP -->
@@ -416,7 +431,7 @@ footer p{color:#222;font-size:.68rem}
 
 <!-- LANDING -->
 <div class="sec" style="margin-top:72px">
-  <p style="font-size:.8rem;color:#444;text-align:center;max-width:600px;margin:0 auto 44px;line-height:1.75" id="t-divtext">AEO — это оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 60+ факторов и генерирует готовый код.</p>
+  <p style="font-size:.8rem;color:#aaa;text-align:center;max-width:600px;margin:0 auto 44px;line-height:1.75" id="t-divtext">AEO — это оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 60+ факторов и генерирует готовый код.</p>
   <h2 class="sec-h" id="t-3h">Три оценки. Один скан.</h2>
   <p class="sec-s" id="t-3s">Может ли AI найти вас? Процитирует? Взаимодействуют ли агенты?</p>
   <div class="g3">
@@ -480,6 +495,16 @@ footer p{color:#222;font-size:.68rem}
   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-g" onclick="goTop()"><span id="t-fcta-btn">Сканировать бесплатно</span></button></div>
 </div>
 
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})" id="scrollTopBtn"
+  style="position:fixed;bottom:24px;right:24px;width:48px;height:48px;background:#00e676;border:none;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:20px;color:#000;font-weight:800;z-index:99;box-shadow:0 4px 24px rgba(0,230,118,.4)"
+  title="Наверх">↑</button>
+<script>
+window.addEventListener('scroll',function(){
+  var btn=document.getElementById('scrollTopBtn');
+  if(btn){btn.style.display=window.scrollY>400?'flex':'none';}
+});
+</script>
+
 <footer>
   <p>FixMyAI &copy; 2026</p>
   <div class="fl"><a href="#how" id="fl-how">Как работает</a><a href="#faq" id="fl-faq">FAQ</a><a href="mailto:hello@fixmyai.com">hello@fixmyai.com</a></div>
@@ -494,13 +519,13 @@ var PDF_URL='https://fixmyai-proxy.vercel.app/api/pdf';
 var LANG='ru',SDATA=null,SURL='';
 
 var TX={
-ru:{'logo':'FixMyAI','badge':'AI-поиск заменяет обычный — готов ли ваш сайт?','desc':'FixMyAI — бесплатный инструмент аудита для оптимизации под ChatGPT, Perplexity и Google AI Overviews.','ey':'FIX MY AI','h1':'Ваш сайт невидим','h2':'для AI.','sub':'Perplexity, ChatGPT и Google AI Overviews отвечают на вопросы вместо показа ссылок. Если ваш сайт не оптимизирован — вас не существует.','scanbtn':'Сканировать бесплатно','note':'Без регистрации · Реальный AI-анализ · ~60 секунд','rh':'Результаты сканирования','ifound':'Найденные проблемы','cta1':'Получить полный PDF-отчёт','cta2':'Скачайте полный PDF — все исправления с готовым кодом и инструкцией для вашей платформы.','ps':'$29','pf':'БЕСПЛАТНО сегодня','dlbtn':'⬇ Скачать отчёт','reset':'Сканировать другой сайт','divtext':'AEO — оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 60+ факторов по 5 категориям: Structured Data, Meta & Technical, AI Accessibility, Content Quality, GEO Readiness.','3h':'Три оценки. Один скан.','3s':'Может ли AI найти вас? Процитирует? Взаимодействуют ли агенты?','asl':'AI Search Visibility','ad':'Насколько хорошо AI-поисковики находят ваш контент','gsl':'AI Citation Readiness','gd':'Насколько вероятно что AI упомянет ваш бренд','agsl':'Agent Interaction Ready','agd':'Насколько легко AI-агентам взаимодействовать','stat-h':'Цифры жёсткие.','stat-s':'Если AI не читает ваш сайт — AI его не рекомендует.','s1l':'меньше кликов на первый результат','s1d':'AI Overviews забирает трафик с топовых результатов','s2l':'поисковых запросов без клика','s2d':'Пользователи получают ответы без перехода на сайт','s3l':'выше конверсия с AI-поиска','s3d':'По сравнению с обычным органическим трафиком','how-h':'Скан. Исправление. Проверка.','how-s':'Три шага к видимости в AI','s1h':'Введите URL','s1p':'Читаем главную + услуги + контакты. 60+ факторов AI-видимости по 5 категориям.','s2h':'Видите точные проблемы','s2p':'AI Visibility Score, запросы где вас нет, AI Identity Card, прогноз.','s3h':'Скопировал → Вставил → Готово','s3p':'Готовый код + инструкция для платформы. Без программиста.','ba-h':'Реальные результаты. Без трюков.','ba-s':'Сайт улучшился с 32/100 до 74/100 за 45 минут.','before':'До','after':'После','tbl-h':'FixMyAI vs другие инструменты','th1':'Функция','th2':'Мониторинг','th3':'Бесплатные','faq-h':'Часто задаваемые вопросы','fcta-h':'Ваши конкуренты оптимизируются для AI. А вы?','fcta-p':'Бесплатно. Мгновенно. Без регистрации.','fcta-btn':'Сканировать бесплатно','nl-how':'Как работает','nl-faq':'FAQ','nl-scan':'Бесплатный скан','fl-how':'Как работает','fl-faq':'FAQ','tab-scan':'🔍 Сканировать','tab-comp':'⚔️ Конкуренты','tab-cite':'💬 Цитирование','ylbl':'Ваш сайт','clbl':'Сайт конкурента','opt1':'(необязательно — найдём сами)','opt2':'(необязательно)','opt3':'(необязательно — подберём сами)','compbtn':'Сравнить','comp-note':'Найдём 3 конкурентов автоматически','qylbl':'Ваш сайт','qclbl':'Сайт конкурента','qlbl':'Поисковый запрос','citebtn':'Проверить цитирование','cite-note':'Покажем % упоминаний по 5 AI','comp-rh':'Анализ конкурентов','comp-cta':'Улучшить свои позиции','comp-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','comp-scanbtn':'Сканировать свой сайт','cite-rh':'Анализ цитирования по AI','cite-tbl-h':'Упоминания по каждому AI','c-ai':'AI-поисковик','c-your':'Ваш сайт','c-comp':'Конкурент','cite-cta':'Улучшить цитирование','cite-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','cite-scanbtn':'Сканировать сайт',
+ru:{'logo':'FixMyAI','badge':'AI-поиск заменяет обычный — готов ли ваш сайт?','desc':'FixMyAI — бесплатный инструмент аудита для оптимизации под ChatGPT, Perplexity и Google AI Overviews.','ey':'FIXMYAI','h1':'Ваш сайт невидим','h2':'для AI.','sub':'Perplexity, ChatGPT и Google AI Overviews отвечают на вопросы вместо показа ссылок. Если ваш сайт не оптимизирован — вас не существует.','scanbtn':'Сканировать бесплатно','note':'Без регистрации · Реальный AI-анализ · ~60 секунд','rh':'Результаты сканирования','ifound':'Найденные проблемы','cta1':'Получить полный PDF-отчёт','cta2':'Скачайте полный PDF — все исправления с готовым кодом и инструкцией для вашей платформы.','ps':'$29','pf':'БЕСПЛАТНО сегодня','dlbtn':'⬇ Скачать отчёт','reset':'Сканировать другой сайт','divtext':'AEO — оптимизация сайта для AI-поисковиков. FixMyAI читает реальный HTML, определяет платформу, анализирует 60+ факторов по 5 категориям: Structured Data, Meta & Technical, AI Accessibility, Content Quality, GEO Readiness.','3h':'Три оценки. Один скан.','3s':'Может ли AI найти вас? Процитирует? Взаимодействуют ли агенты?','asl':'AI Search Visibility','ad':'Насколько хорошо AI-поисковики находят ваш контент','gsl':'AI Citation Readiness','gd':'Насколько вероятно что AI упомянет ваш бренд','agsl':'Agent Interaction Ready','agd':'Насколько легко AI-агентам взаимодействовать','stat-h':'Цифры жёсткие.','stat-s':'Если AI не читает ваш сайт — AI его не рекомендует.','s1l':'меньше кликов на первый результат','s1d':'AI Overviews забирает трафик с топовых результатов','s2l':'поисковых запросов без клика','s2d':'Пользователи получают ответы без перехода на сайт','s3l':'выше конверсия с AI-поиска','s3d':'По сравнению с обычным органическим трафиком','how-h':'Скан. Исправление. Проверка.','how-s':'Три шага к видимости в AI','s1h':'Введите URL','s1p':'Читаем главную + услуги + контакты. 60+ факторов AI-видимости по 5 категориям.','s2h':'Видите точные проблемы','s2p':'AI Visibility Score, запросы где вас нет, AI Identity Card, прогноз.','s3h':'Скопировал → Вставил → Готово','s3p':'Готовый код + инструкция для платформы. Без программиста.','ba-h':'Реальные результаты. Без трюков.','ba-s':'Сайт улучшился с 32/100 до 74/100 за 45 минут.','before':'До','after':'После','tbl-h':'FixMyAI vs другие инструменты','th1':'Функция','th2':'Мониторинг','th3':'Бесплатные','faq-h':'Часто задаваемые вопросы','fcta-h':'Ваши конкуренты оптимизируются для AI. А вы?','fcta-p':'Бесплатно. Мгновенно. Без регистрации.','fcta-btn':'Сканировать бесплатно','nl-how':'Как работает','nl-faq':'FAQ','nl-scan':'Бесплатный скан','fl-how':'Как работает','fl-faq':'FAQ','tab-scan':'🔍 Сканировать','tab-comp':'⚔️ Конкуренты','tab-cite':'💬 Цитирование','ylbl':'Ваш сайт','clbl':'Сайт конкурента','opt1':'(необязательно — найдём сами)','opt2':'(необязательно)','opt3':'(необязательно — подберём сами)','compbtn':'Сравнить','comp-note':'Найдём 3 конкурентов автоматически','qylbl':'Ваш сайт','qclbl':'Сайт конкурента','qlbl':'Поисковый запрос','citebtn':'Проверить цитирование','cite-note':'Покажем % упоминаний по 5 AI','comp-rh':'Анализ конкурентов','comp-cta':'Улучшить свои позиции','comp-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','comp-scanbtn':'Сканировать свой сайт','cite-rh':'Анализ цитирования по AI','cite-tbl-h':'Упоминания по каждому AI','c-ai':'AI-поисковик','c-your':'Ваш сайт','c-comp':'Конкурент','cite-cta':'Улучшить цитирование','cite-ctap':'Отсканируйте сайт чтобы получить точный код исправлений.','cite-scanbtn':'Сканировать сайт',
 'sl':['AEO Оценка','GEO Оценка','Готовность AI'],'sd':['Видимость в AI-поиске','Готовность к цитированию','Взаимодействие с AI'],
 'ss':['Загружаем главную страницу...','Ищем страницу услуг...','Ищем страницу контактов...','Читаем HTML и структуру...','Проверяем schema.org...','Проверяем robots.txt...','Ищем llms.txt...','Проверяем Open Graph...','Определяем платформу и тип бизнеса...','Анализируем AI-видимость...','Рассчитываем AI Visibility Score...','Формируем отчёт...']},
-en:{'logo':'FixMyAI','badge':'AI search is replacing traditional search — is your site ready?','desc':'FixMyAI is a free audit tool to optimize your site for ChatGPT, Perplexity and Google AI Overviews.','ey':'FIX MY AI','h1':'Your site is invisible','h2':'to AI.','sub':'Perplexity, ChatGPT and Google AI Overviews answer questions instead of showing links. If your site isn\'t optimized — you don\'t exist.','scanbtn':'Scan for Free','note':'No signup · Real AI analysis · ~60 seconds','rh':'Scan Results','ifound':'Issues Found','cta1':'Get Full PDF Report','cta2':'Download the full PDF — all fixes with copy-paste code and instructions for your platform.','ps':'$29','pf':'FREE today','dlbtn':'⬇ Download Report','reset':'Scan another site','divtext':'AEO is optimizing websites for AI search engines. FixMyAI reads real HTML, detects platform, analyzes 60+ factors across 5 categories: Structured Data, Meta & Technical, AI Accessibility, Content Quality and GEO Readiness.','3h':'Three scores. One scan.','3s':'Can AI find you? Will AI cite you? Can AI agents interact?','asl':'AI Search Visibility','ad':'How well AI search engines can find your content','gsl':'AI Citation Readiness','gd':'How likely AI is to cite and mention your brand','agsl':'Agent Interaction Ready','agd':'How easily AI agents can interact with your site','stat-h':'The numbers are brutal.','stat-s':'If AI can\'t read your site, AI can\'t recommend your site.','s1l':'fewer clicks to #1 result','s1d':'AI Overviews steal traffic from top organic results','s2l':'zero-click searches','s2d':'Users get answers without visiting any website','s3l':'higher conversion from AI search','s3d':'Compared to traditional organic traffic','how-h':'Scan. Fix. Verify.','how-s':'Three steps to AI visibility','s1h':'Enter your URL','s1p':'We read homepage + services + contact pages. 60+ AI visibility factors.','s2h':'See exact problems','s2p':'AI Visibility Score, queries where you\'re invisible, AI Identity Card, prediction.','s3h':'Copy → Paste → Done','s3p':'Ready code + platform instructions. No developer needed.','ba-h':'Real results. No tricks.','ba-s':'Site improved from 32/100 to 74/100 in 45 minutes.','before':'Before','after':'After','tbl-h':'FixMyAI vs Other Tools','th1':'Feature','th2':'Monitoring','th3':'Free Scanners','faq-h':'Frequently asked questions','fcta-h':'Your competitors are optimizing for AI. Are you?','fcta-p':'Free. Instant. No signup.','fcta-btn':'Scan for Free','nl-how':'How it works','nl-faq':'FAQ','nl-scan':'Free Scan','fl-how':'How it works','fl-faq':'FAQ','tab-scan':'🔍 Scan','tab-comp':'⚔️ Competitors','tab-cite':'💬 Citation','ylbl':'Your site','clbl':'Competitor site','opt1':'(optional — we\'ll find automatically)','opt2':'(optional)','opt3':'(optional — we\'ll suggest)','compbtn':'Compare','comp-note':'We\'ll find 3 competitors automatically','qylbl':'Your site','qclbl':'Competitor site','qlbl':'Search query','citebtn':'Check Citation','cite-note':'We\'ll show % mentions across 5 AI engines','comp-rh':'Competitor Analysis','comp-cta':'Improve your positions','comp-ctap':'Scan your site to get exact fix code.','comp-scanbtn':'Scan your site','cite-rh':'AI Citation Analysis','cite-tbl-h':'Mentions by each AI','c-ai':'AI Engine','c-your':'Your site','c-comp':'Competitor','cite-cta':'Improve citation','cite-ctap':'Scan your site to get exact fix code.','cite-scanbtn':'Scan site',
+en:{'logo':'FixMyAI','badge':'AI search is replacing traditional search — is your site ready?','desc':'FixMyAI is a free audit tool to optimize your site for ChatGPT, Perplexity and Google AI Overviews.','ey':'FIXMYAI','h1':'Your site is invisible','h2':'to AI.','sub':'Perplexity, ChatGPT and Google AI Overviews answer questions instead of showing links. If your site isn\'t optimized — you don\'t exist.','scanbtn':'Scan for Free','note':'No signup · Real AI analysis · ~60 seconds','rh':'Scan Results','ifound':'Issues Found','cta1':'Get Full PDF Report','cta2':'Download the full PDF — all fixes with copy-paste code and instructions for your platform.','ps':'$29','pf':'FREE today','dlbtn':'⬇ Download Report','reset':'Scan another site','divtext':'AEO is optimizing websites for AI search engines. FixMyAI reads real HTML, detects platform, analyzes 60+ factors across 5 categories: Structured Data, Meta & Technical, AI Accessibility, Content Quality and GEO Readiness.','3h':'Three scores. One scan.','3s':'Can AI find you? Will AI cite you? Can AI agents interact?','asl':'AI Search Visibility','ad':'How well AI search engines can find your content','gsl':'AI Citation Readiness','gd':'How likely AI is to cite and mention your brand','agsl':'Agent Interaction Ready','agd':'How easily AI agents can interact with your site','stat-h':'The numbers are brutal.','stat-s':'If AI can\'t read your site, AI can\'t recommend your site.','s1l':'fewer clicks to #1 result','s1d':'AI Overviews steal traffic from top organic results','s2l':'zero-click searches','s2d':'Users get answers without visiting any website','s3l':'higher conversion from AI search','s3d':'Compared to traditional organic traffic','how-h':'Scan. Fix. Verify.','how-s':'Three steps to AI visibility','s1h':'Enter your URL','s1p':'We read homepage + services + contact pages. 60+ AI visibility factors.','s2h':'See exact problems','s2p':'AI Visibility Score, queries where you\'re invisible, AI Identity Card, prediction.','s3h':'Copy → Paste → Done','s3p':'Ready code + platform instructions. No developer needed.','ba-h':'Real results. No tricks.','ba-s':'Site improved from 32/100 to 74/100 in 45 minutes.','before':'Before','after':'After','tbl-h':'FixMyAI vs Other Tools','th1':'Feature','th2':'Monitoring','th3':'Free Scanners','faq-h':'Frequently asked questions','fcta-h':'Your competitors are optimizing for AI. Are you?','fcta-p':'Free. Instant. No signup.','fcta-btn':'Scan for Free','nl-how':'How it works','nl-faq':'FAQ','nl-scan':'Free Scan','fl-how':'How it works','fl-faq':'FAQ','tab-scan':'🔍 Scan','tab-comp':'⚔️ Competitors','tab-cite':'💬 Citation','ylbl':'Your site','clbl':'Competitor site','opt1':'(optional — we\'ll find automatically)','opt2':'(optional)','opt3':'(optional — we\'ll suggest)','compbtn':'Compare','comp-note':'We\'ll find 3 competitors automatically','qylbl':'Your site','qclbl':'Competitor site','qlbl':'Search query','citebtn':'Check Citation','cite-note':'We\'ll show % mentions across 5 AI engines','comp-rh':'Competitor Analysis','comp-cta':'Improve your positions','comp-ctap':'Scan your site to get exact fix code.','comp-scanbtn':'Scan your site','cite-rh':'AI Citation Analysis','cite-tbl-h':'Mentions by each AI','c-ai':'AI Engine','c-your':'Your site','c-comp':'Competitor','cite-cta':'Improve citation','cite-ctap':'Scan your site to get exact fix code.','cite-scanbtn':'Scan site',
 'sl':['AEO Score','GEO Score','Agent Readiness'],'sd':['AI Search Visibility','AI Citation Readiness','Agent Interaction Ready'],
 'ss':['Fetching homepage...','Finding services page...','Finding contact page...','Reading HTML structure...','Checking schema.org...','Checking robots.txt...','Looking for llms.txt...','Checking Open Graph...','Detecting platform and business type...','Analyzing AI visibility...','Calculating AI Visibility Score...','Building report...']},
-de:{'logo':'FixMyAI','badge':'KI-Suche ersetzt normale Suche — ist Ihre Website bereit?','desc':'FixMyAI ist ein kostenloses Audit-Tool zur Optimierung für ChatGPT, Perplexity und Google AI Overviews.','ey':'FIX MY AI','h1':'Ihre Website ist unsichtbar','h2':'für KI.','sub':'Perplexity, ChatGPT und Google AI Overviews beantworten Fragen statt Links zu zeigen. Wenn Ihre Website nicht optimiert ist — existieren Sie nicht.','scanbtn':'Kostenlos scannen','note':'Keine Anmeldung · Echte KI-Analyse · ~60 Sekunden','rh':'Scan-Ergebnisse','ifound':'Gefundene Probleme','cta1':'Vollständigen Bericht herunterladen','cta2':'Laden Sie den vollständigen Bericht herunter — alle Korrekturen mit Code und Anleitung für Ihre Plattform.','ps':'$29','pf':'HEUTE KOSTENLOS','dlbtn':'⬇ Bericht herunterladen','reset':'Andere Website scannen','tab-scan':'🔍 Scannen','tab-comp':'⚔️ Konkurrenten','tab-cite':'💬 Zitierung','ylbl':'Ihre Website','clbl':'Konkurrenten-Website','opt1':'(optional — wir finden automatisch)','opt2':'(optional)','opt3':'(optional — wir schlagen vor)','compbtn':'Vergleichen','comp-note':'Wir finden automatisch 3 Konkurrenten','qylbl':'Ihre Website','qclbl':'Konkurrenten-Website','qlbl':'Suchanfrage','citebtn':'Zitierung prüfen','cite-note':'Wir zeigen % Erwähnungen in 5 KI-Engines','comp-rh':'Konkurrenzanalyse','comp-cta':'Ihre Positionen verbessern','comp-ctap':'Scannen Sie Ihre Website für genauen Fix-Code.','comp-scanbtn':'Ihre Website scannen','cite-rh':'KI-Zitierungsanalyse','cite-tbl-h':'Erwähnungen pro KI','c-ai':'KI-Suchmaschine','c-your':'Ihre Website','c-comp':'Konkurrent','cite-cta':'Zitierung verbessern','cite-ctap':'Scannen Sie Ihre Website für genauen Fix-Code.','cite-scanbtn':'Website scannen','nl-how':'Wie es funktioniert','nl-faq':'FAQ','nl-scan':'Kostenloser Scan','fl-how':'Wie es funktioniert','fl-faq':'FAQ','3h':'Drei Bewertungen. Ein Scan.','3s':'Kann KI Sie finden? Wird KI Sie zitieren?','asl':'KI-Suchsichtbarkeit','ad':'Wie gut KI-Suchmaschinen Ihre Inhalte finden','gsl':'KI-Zitierungsbereitschaft','gd':'Wie wahrscheinlich KI Ihre Marke erwähnt','agsl':'Agent-Interaktionsbereitschaft','agd':'Wie einfach KI-Agenten mit Ihrer Website interagieren','stat-h':'Die Zahlen sind brutal.','stat-s':'Wenn KI Ihre Website nicht lesen kann, kann KI sie nicht empfehlen.','s1l':'weniger Klicks auf Ergebnis #1','s1d':'KI-Übersichten stehlen Traffic von organischen Ergebnissen','s2l':'Zero-Click-Suchen','s2d':'Nutzer erhalten Antworten ohne Website-Besuch','s3l':'höhere Conversion von KI-Suche','s3d':'Im Vergleich zu traditionellem organischen Traffic','how-h':'Scannen. Beheben. Überprüfen.','how-s':'Drei Schritte zur KI-Sichtbarkeit','s1h':'URL eingeben','s1p':'Wir lesen Startseite + Services + Kontakt. 33 KI-Sichtbarkeitsfaktoren.','s2h':'Genaue Probleme sehen','s2p':'KI-Sichtbarkeitswert, unsichtbare Suchanfragen, KI-Identitätskarte.','s3h':'Kopieren → Einfügen → Fertig','s3p':'Fertiger Code + Plattformanleitung. Kein Entwickler erforderlich.','ba-h':'Echte Ergebnisse. Keine Tricks.','ba-s':'Website von 32/100 auf 74/100 in 45 Minuten verbessert.','before':'Vorher','after':'Nachher','tbl-h':'FixMyAI vs andere Tools','th1':'Funktion','th2':'Monitoring','th3':'Kostenlose Scanner','faq-h':'Häufig gestellte Fragen','fcta-h':'Ihre Konkurrenten optimieren für KI. Und Sie?','fcta-p':'Kostenlos. Sofort. Keine Anmeldung.','fcta-btn':'Kostenlos scannen','divtext':'AEO ist die Optimierung von Websites für KI-Suchmaschinen. FixMyAI liest echtes HTML, erkennt die Plattform, analysiert 60+ Faktoren.',
+de:{'logo':'FixMyAI','badge':'KI-Suche ersetzt normale Suche — ist Ihre Website bereit?','desc':'FixMyAI ist ein kostenloses Audit-Tool zur Optimierung für ChatGPT, Perplexity und Google AI Overviews.','ey':'FIXMYAI','h1':'Ihre Website ist unsichtbar','h2':'für KI.','sub':'Perplexity, ChatGPT und Google AI Overviews beantworten Fragen statt Links zu zeigen. Wenn Ihre Website nicht optimiert ist — existieren Sie nicht.','scanbtn':'Kostenlos scannen','note':'Keine Anmeldung · Echte KI-Analyse · ~60 Sekunden','rh':'Scan-Ergebnisse','ifound':'Gefundene Probleme','cta1':'Vollständigen Bericht herunterladen','cta2':'Laden Sie den vollständigen Bericht herunter — alle Korrekturen mit Code und Anleitung für Ihre Plattform.','ps':'$29','pf':'HEUTE KOSTENLOS','dlbtn':'⬇ Bericht herunterladen','reset':'Andere Website scannen','tab-scan':'🔍 Scannen','tab-comp':'⚔️ Konkurrenten','tab-cite':'💬 Zitierung','ylbl':'Ihre Website','clbl':'Konkurrenten-Website','opt1':'(optional — wir finden automatisch)','opt2':'(optional)','opt3':'(optional — wir schlagen vor)','compbtn':'Vergleichen','comp-note':'Wir finden automatisch 3 Konkurrenten','qylbl':'Ihre Website','qclbl':'Konkurrenten-Website','qlbl':'Suchanfrage','citebtn':'Zitierung prüfen','cite-note':'Wir zeigen % Erwähnungen in 5 KI-Engines','comp-rh':'Konkurrenzanalyse','comp-cta':'Ihre Positionen verbessern','comp-ctap':'Scannen Sie Ihre Website für genauen Fix-Code.','comp-scanbtn':'Ihre Website scannen','cite-rh':'KI-Zitierungsanalyse','cite-tbl-h':'Erwähnungen pro KI','c-ai':'KI-Suchmaschine','c-your':'Ihre Website','c-comp':'Konkurrent','cite-cta':'Zitierung verbessern','cite-ctap':'Scannen Sie Ihre Website für genauen Fix-Code.','cite-scanbtn':'Website scannen','nl-how':'Wie es funktioniert','nl-faq':'FAQ','nl-scan':'Kostenloser Scan','fl-how':'Wie es funktioniert','fl-faq':'FAQ','3h':'Drei Bewertungen. Ein Scan.','3s':'Kann KI Sie finden? Wird KI Sie zitieren?','asl':'KI-Suchsichtbarkeit','ad':'Wie gut KI-Suchmaschinen Ihre Inhalte finden','gsl':'KI-Zitierungsbereitschaft','gd':'Wie wahrscheinlich KI Ihre Marke erwähnt','agsl':'Agent-Interaktionsbereitschaft','agd':'Wie einfach KI-Agenten mit Ihrer Website interagieren','stat-h':'Die Zahlen sind brutal.','stat-s':'Wenn KI Ihre Website nicht lesen kann, kann KI sie nicht empfehlen.','s1l':'weniger Klicks auf Ergebnis #1','s1d':'KI-Übersichten stehlen Traffic von organischen Ergebnissen','s2l':'Zero-Click-Suchen','s2d':'Nutzer erhalten Antworten ohne Website-Besuch','s3l':'höhere Conversion von KI-Suche','s3d':'Im Vergleich zu traditionellem organischen Traffic','how-h':'Scannen. Beheben. Überprüfen.','how-s':'Drei Schritte zur KI-Sichtbarkeit','s1h':'URL eingeben','s1p':'Wir lesen Startseite + Services + Kontakt. 33 KI-Sichtbarkeitsfaktoren.','s2h':'Genaue Probleme sehen','s2p':'KI-Sichtbarkeitswert, unsichtbare Suchanfragen, KI-Identitätskarte.','s3h':'Kopieren → Einfügen → Fertig','s3p':'Fertiger Code + Plattformanleitung. Kein Entwickler erforderlich.','ba-h':'Echte Ergebnisse. Keine Tricks.','ba-s':'Website von 32/100 auf 74/100 in 45 Minuten verbessert.','before':'Vorher','after':'Nachher','tbl-h':'FixMyAI vs andere Tools','th1':'Funktion','th2':'Monitoring','th3':'Kostenlose Scanner','faq-h':'Häufig gestellte Fragen','fcta-h':'Ihre Konkurrenten optimieren für KI. Und Sie?','fcta-p':'Kostenlos. Sofort. Keine Anmeldung.','fcta-btn':'Kostenlos scannen','divtext':'AEO ist die Optimierung von Websites für KI-Suchmaschinen. FixMyAI liest echtes HTML, erkennt die Plattform, analysiert 60+ Faktoren.',
 'sl':['AEO-Bewertung','GEO-Bewertung','Agent-Bereitschaft'],'sd':['KI-Suchsichtbarkeit','KI-Zitierungsbereitschaft','Agent-Interaktionsbereitschaft'],
 'ss':['Startseite laden...','Serviceseite suchen...','Kontaktseite suchen...','HTML-Struktur lesen...','Schema.org prüfen...','robots.txt prüfen...','llms.txt suchen...','Open Graph prüfen...','Plattform und Geschäftstyp erkennen...','KI-Sichtbarkeit analysieren...','KI-Sichtbarkeitswert berechnen...','Bericht erstellen...']}
 };
@@ -842,6 +867,8 @@ function startScan(){
   if(!raw){toast(LANG==='ru'?'Введите URL':'Enter URL');return;}
   SURL=raw.indexOf('http')===0?raw:'https://'+raw;
   document.getElementById('scanBtn').disabled=true;
+  var hint=document.getElementById('scrollHint');
+  if(hint)hint.style.display='block';
   document.getElementById('errBox').classList.remove('on');
   document.getElementById('resEl').classList.remove('on');
   document.getElementById('scanEl').classList.add('on');
@@ -1510,6 +1537,25 @@ function demoData(url){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
+  // Save UTM params for analytics
+  var urlP = new URLSearchParams(window.location.search);
+  var utmData = {
+    source: urlP.get('utm_source') || '',
+    medium: urlP.get('utm_medium') || '',
+    campaign: urlP.get('utm_campaign') || '',
+    content: urlP.get('utm_content') || ''
+  };
+  if(utmData.source) {
+    window._utm = utmData;
+    // Send to GA if available
+    if(typeof gtag !== 'undefined') {
+      gtag('event', 'page_view', {
+        'utm_source': utmData.source,
+        'utm_campaign': utmData.campaign
+      });
+    }
+  }
+
   // Auto-detect language from browser
   var browserLang = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
   var autoLang = 'ru';
