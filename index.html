@@ -1298,6 +1298,16 @@ function tCR(i){document.getElementById('cr'+i).classList.toggle('expanded');}
 // PDF
 function dlPDF(){
   if(!SDATA){toast(LANG==='ru'?'Сначала выполните скан':'Run a scan first');return;}
+
+  // Admin check - only allow download with ?admin=key
+  var urlP2=new URLSearchParams(window.location.search);
+  var isAdmin=urlP2.get('admin')==='fixmyai2024' || urlP2.get('preview')==='1';
+  if(!isAdmin){
+    var tallyUrl='https://tally.so/r/441vJd?domain='+encodeURIComponent(SURL);
+    window.open(tallyUrl,'_blank');
+    return;
+  }
+
   var btn=document.getElementById('dlBtn'),sp=document.getElementById('t-dlbtn');
   btn.disabled=true;sp.textContent=LANG==='ru'?'⏳ Генерируем PDF...':'⏳ Generating PDF...';
 
