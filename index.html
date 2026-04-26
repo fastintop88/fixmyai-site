@@ -1038,11 +1038,41 @@ function showResults(data){
       var qwSub=isRuQW?'Паста-код правки — результат за 1 день':isDeQW?'Copy-Paste-Korrekturen — Ergebnisse in 1 Tag':'Paste-and-go fixes — results in 1 day';
       var qwH='<div style="font-family:Sora,sans-serif;font-size:.86rem;font-weight:700;color:var(--green);margin-bottom:4px">'+qwTitle+'</div>';
       qwH+='<div style="font-size:.72rem;color:#555;margin-bottom:14px">'+qwSub+'</div>';
-      qwH+='<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px">';
-      qwH+='<div style="text-align:center"><div style="font-size:.6rem;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">AEO</div><div style="font-size:.9rem;font-weight:700;color:#ff5252">'+qw.aeo_now+'</div><div style="color:#333;font-size:.8rem;margin:0 6px">→</div><div style="font-size:.9rem;font-weight:700;color:var(--yellow)">'+qw.aeo_after_quick+'</div><div style="font-size:.7rem;color:var(--green);font-weight:700">+'+( qw.aeo_after_quick-qw.aeo_now)+'</div></div>';
-      qwH+='<div style="text-align:center"><div style="font-size:.6rem;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">GEO</div><div style="font-size:.9rem;font-weight:700;color:#ff5252">'+qw.geo_now+'</div><div style="color:#333;font-size:.8rem;margin:0 6px">→</div><div style="font-size:.9rem;font-weight:700;color:var(--green)">'+qw.geo_after_quick+'</div><div style="font-size:.7rem;color:var(--green);font-weight:700">+'+( qw.geo_after_quick-qw.geo_now)+'</div></div>';
-      qwH+='<div style="flex:1;min-width:160px">'+(qw.items||[]).map(function(it){return '<div style="font-size:.72rem;color:#448;padding:2px 0;display:flex;align-items:center;gap:6px"><span style="color:var(--green);font-weight:700">'+it.impact+'</span><span>'+esc(it.action)+'</span></div>';}).join('')+'</div>';
+
+      // Scores row - clean side by side
+      qwH+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+      // AEO box
+      qwH+='<div style="background:#080808;border:1px solid #1a1a1a;border-radius:8px;padding:12px;text-align:center">';
+      qwH+='<div style="font-size:.65rem;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">AEO</div>';
+      qwH+='<div style="display:flex;align-items:center;justify-content:center;gap:8px">';
+      qwH+='<span style="font-size:1.4rem;font-weight:800;color:#ff5252">'+qw.aeo_now+'</span>';
+      qwH+='<span style="color:#333;font-size:.9rem">→</span>';
+      qwH+='<span style="font-size:1.4rem;font-weight:800;color:var(--yellow)">'+qw.aeo_after_quick+'</span>';
       qwH+='</div>';
+      qwH+='<div style="font-size:.72rem;color:var(--green);font-weight:700;margin-top:4px">+'+( qw.aeo_after_quick-qw.aeo_now)+' points</div>';
+      qwH+='</div>';
+      // GEO box
+      qwH+='<div style="background:#080808;border:1px solid #1a1a1a;border-radius:8px;padding:12px;text-align:center">';
+      qwH+='<div style="font-size:.65rem;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">GEO</div>';
+      qwH+='<div style="display:flex;align-items:center;justify-content:center;gap:8px">';
+      qwH+='<span style="font-size:1.4rem;font-weight:800;color:#ff5252">'+qw.geo_now+'</span>';
+      qwH+='<span style="color:#333;font-size:.9rem">→</span>';
+      qwH+='<span style="font-size:1.4rem;font-weight:800;color:var(--green)">'+qw.geo_after_quick+'</span>';
+      qwH+='</div>';
+      qwH+='<div style="font-size:.72rem;color:var(--green);font-weight:700;margin-top:4px">+'+( qw.geo_after_quick-qw.geo_now)+' points</div>';
+      qwH+='</div>';
+      qwH+='</div>';
+
+      // Items list
+      qwH+='<div style="display:flex;flex-direction:column;gap:6px">';
+      qwH+=(qw.items||[]).map(function(it){
+        return '<div style="display:flex;align-items:center;gap:10px;background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px 12px">'
+          +'<span style="color:var(--green);font-weight:800;font-size:.78rem;white-space:nowrap;min-width:50px">'+it.impact+'</span>'
+          +'<span style="font-size:.74rem;color:#aaa">'+esc(it.action)+'</span>'
+          +'</div>';
+      }).join('');
+      qwH+='</div>';
+
       qwEl.innerHTML=qwH;
       qwEl.style.display='block';
     }
